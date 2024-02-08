@@ -31,7 +31,7 @@
                 Console.WriteLine($"({x[4]}) Create sample data");
                 Console.WriteLine($"({x[5]}) Exit");
 
-                ConsoleKey key = Console.ReadKey().Key;
+                ConsoleKey key = Console.ReadKey(true).Key;
                 switch (key)
                 {
                     case ConsoleKey.UpArrow:
@@ -52,12 +52,10 @@
                         continue;
                 }
 
-                Utils.ConsoleClear();
-
                 switch (i)
                 {
                     case 0:
-                        ListOfHabits();
+                        HabitsEditor();
                         break;
 
                     case 4:
@@ -68,7 +66,7 @@
                         Console.WriteLine("Are you sure you want to leave?");
                         Console.WriteLine("Press \"Enter\" to confirm or any other key to cancel.");
 
-                        key = Console.ReadKey().Key;
+                        key = Console.ReadKey(true).Key;
                         if (key == ConsoleKey.Enter)
                             exit = true;
 
@@ -77,13 +75,119 @@
             }
         }
 
-        public static void ListOfHabits()
+        public static void HabitsEditor()
         {
-            HabitDatabase.Read();
-            Console.WriteLine();
-            Console.WriteLine("Press any key to continue.");
+            Utils.ConsoleClear();
 
-            int numberOfOptions = Console.CursorTop - 3;
+            HabitDatabase.ReadAll();
+            Console.WriteLine();
+            Console.WriteLine("Escape - Exit, A - Add a habit, R - Remove chosen habit, E - Edit chosen habit, Enter - View habit");
+
+            int linesUnderOptions = 3;
+            int numberOfOptions = Console.CursorTop - linesUnderOptions;
+            int option = numberOfOptions;
+            int newLines = 0;
+            bool exit = false;
+
+            Console.SetCursorPosition(1, option);
+            Console.Write("X");
+
+            while (!exit)
+            {
+                ConsoleKey key = Console.ReadKey(true).Key;
+
+                switch (key)
+                {
+                    case ConsoleKey.UpArrow:
+                    case ConsoleKey.W:
+                        Console.SetCursorPosition(0, option);
+                        Console.Write("( )");
+                        option--;
+                        if (option < 0)
+                            option = numberOfOptions;
+
+                        Console.SetCursorPosition(0, option);
+                        Console.Write("(X)");
+                        continue;
+
+                    case ConsoleKey.DownArrow:
+                    case ConsoleKey.S:
+                        Console.SetCursorPosition(0, option);
+                        Console.Write("( )");
+                        option++;
+                        if (option > numberOfOptions)
+                            option = 0;
+
+                        Console.SetCursorPosition(0, option);
+                        Console.Write("(X)");
+                        continue;
+
+                    case ConsoleKey.Enter:
+                        HabitDataEditor("Water drunk");
+                        break;
+
+                    case ConsoleKey.A:
+                    case ConsoleKey.Add:
+                        newLines++;
+                        string? habitName;
+                        string? habitUnit;
+
+                        do
+                        {
+                            Console.SetCursorPosition(0, numberOfOptions + linesUnderOptions + newLines);
+                            Console.Write("Please, enter habit name: ");
+                            habitName = Console.ReadLine();
+
+                            if (string.IsNullOrEmpty(habitName))
+                            {
+                                Console.WriteLine("Incorrect habit name!");
+                                newLines++;
+                            }
+                        } while (string.IsNullOrEmpty(habitName));
+
+                        newLines++;
+                        do
+                        {
+                            Console.SetCursorPosition(0, numberOfOptions + linesUnderOptions + newLines);
+                            Console.Write("Please, enter habit unit: ");
+                            habitUnit = Console.ReadLine();
+
+                            if (string.IsNullOrEmpty(habitUnit))
+                            {
+                                Console.WriteLine("Incorrect habit unit!");
+                                newLines++;
+                            }
+                        } while (string.IsNullOrEmpty(habitUnit));
+
+                        HabitDatabase.Create(habitName, habitUnit);
+                        break;
+
+                    case ConsoleKey.R:
+                        newLines++;
+                        Console.SetCursorPosition(0, numberOfOptions + linesUnderOptions + newLines);
+
+                        Console.WriteLine("Are you sure? Press \"Enter\" to confirm or any other key to cancel.");
+                        if (Console.ReadKey(true).Key == ConsoleKey.Enter) HabitDatabase.Remove("Water drunk");
+                        break;
+
+                    case ConsoleKey.Escape:
+                    case ConsoleKey.Backspace:
+                        exit = true;
+                        break;
+                }
+            }
+        }
+
+        public static void HabitDataEditor(string habit)
+        {
+            Utils.ConsoleClear();
+
+            HabitDatabase.ReadAll(habit);
+            Console.WriteLine();
+            Console.WriteLine("Escape - Exit, A - Add a record, R - Remove chosen record, E - Edit chosen record");
+
+            int linesUnderOptions = 3;
+            int numberOfOptions = Console.CursorTop - linesUnderOptions;
             int option = numberOfOptions;
             bool exit = false;
 
@@ -92,28 +196,59 @@
 
             while (!exit)
             {
-                ConsoleKey key = Console.ReadKey().Key;
+                ConsoleKey key = Console.ReadKey(true).Key;
 
                 switch (key)
                 {
                     case ConsoleKey.UpArrow:
                     case ConsoleKey.W:
-                        Console.Write("X");
+                        Console.SetCursorPosition(0, option);
+                        Console.Write("( )");
                         option--;
                         if (option < 0)
-                            option = numberOfOptions - 1;
+                            option = numberOfOptions;
 
-                        Console.SetCursorPosition(1, option);
+                        Console.SetCursorPosition(0, option);
+                        Console.Write("(X)");
                         continue;
+
                     case ConsoleKey.DownArrow:
                     case ConsoleKey.S:
+                        Console.SetCursorPosition(0, option);
+                        Console.Write("( )");
                         option++;
-                        if (option >= numberOfOptions)
+                        if (option > numberOfOptions)
                             option = 0;
 
-                        Console.SetCursorPosition(1, option);
+                        Console.SetCursorPosition(0, option);
+                        Console.Write("(X)");
                         continue;
+
+                    case ConsoleKey.A:
+                    case ConsoleKey.Add:
+                        bool correctData;
+                        double amount;
+                        int newLines = 1;
+
+                        do
+                        {
+                            Console.SetCursorPosition(0, numberOfOptions + linesUnderOptions + newLines);
+                            Console.Write("Please, enter the amount: ");
+                            correctData = double.TryParse(Console.ReadLine(), out amount);
+
+                            if (!correctData)
+                            {
+                                Console.WriteLine("Incorrect number!");
+                                newLines++;
+                            }
+                        } while (!correctData);
+
+
+                        // HabitDatabase.InsertData(option, amount);
+                        break;
+
                     case ConsoleKey.Escape:
+                    case ConsoleKey.Backspace:
                         exit = true;
                         break;
                 }
@@ -122,10 +257,12 @@
 
         public static void CreateSampleData()
         {
+            Utils.ConsoleClear();
+
             Console.WriteLine("Do you really want to create sample data?");
             Console.WriteLine("It will create 1000 random records of a habit named \"Drunk water\", with the unit \"(l) Litres\".");
             Console.WriteLine("Press \"Enter\" to confirm or any other key to cancel.");
-                        
+
             ConsoleKey key = Console.ReadKey().Key;
             if (key == ConsoleKey.Enter)
             {
