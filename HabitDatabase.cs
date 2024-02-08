@@ -1,6 +1,4 @@
-﻿using Microsoft.Data.Sqlite;
-
-/*
+﻿/*
  *
  * All functions used to operate on the database are here.
  *
@@ -9,6 +7,8 @@
  * Every habit has its own table in it.
  *
  */
+
+using Microsoft.Data.Sqlite;
 
 namespace habit_logger;
 
@@ -24,12 +24,12 @@ public static class HabitDatabase
         connection.Open();
 
         // Create table of habits
-        List<string> queries = ["CREATE TABLE IF NOT EXISTS habits (Id INTEGER PRIMARY KEY, Name TEXT, Unit TEXT)"];
+        List<string> queries = ["CREATE TABLE IF NOT EXISTS habits (ID INTEGER PRIMARY KEY, Name TEXT, Unit TEXT)"];
 
         queries.Add($"INSERT INTO habits (Name, Unit) VALUES (\"{name}\", \"{unit}\")");
 
         // Create habit table
-        queries.Add($"CREATE TABLE IF NOT EXISTS \"{name}\" (Id INTEGER PRIMARY KEY, Amount REAL, Time TEXT)");
+        queries.Add($"CREATE TABLE IF NOT EXISTS \"{name}\" (ID INTEGER PRIMARY KEY, Amount REAL, Time TEXT)");
 
         for (int i = 0; i < queries.Count; i++)
         {
@@ -62,6 +62,40 @@ public static class HabitDatabase
         connection.Close();
     }
 
+    public static void Read()
+    {
+        SQLitePCL.Batteries.Init();
+
+        using SqliteConnection connection = new SqliteConnection(_connectionString);
+        connection.Open();
+
+        string query = "SELECT Id, Name, Unit FROM habits;";
+
+        using (SqliteCommand command = new SqliteCommand(query, connection))
+        {
+            using (SqliteDataReader reader = command.ExecuteReader())
+            {
+                if (reader.HasRows)
+                {
+                    while (reader.Read())
+                    {
+                        int id = reader.GetInt32(0); // Assuming the first column is the Id column
+                        string name = reader.GetString(1); // Assuming the second column is the Name column
+                        string unit = reader.GetString(2);
+
+                        Console.WriteLine($"( ) ID: {id} | Name: {name} | Unit: {unit}");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Error: No rows found.");
+                }
+            }
+        }
+
+        connection.Close();
+    }
+
     // Just for testing purposes
     public static void CreateSampleData()
     {
@@ -69,6 +103,7 @@ public static class HabitDatabase
         for (int i = 0; i < 1000; i++)
         {
             double randomNumber = new Random().NextDouble() * 5;
+            Console.Write($"{i+1}. ");
             InsertData("Water drunk", randomNumber);
         }
     }
