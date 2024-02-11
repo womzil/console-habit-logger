@@ -43,7 +43,7 @@ public static class HabitDatabase
         connection.Close();
     }
 
-    public static void Remove(string tableName)
+    public static void RemoveHabit(string tableName)
     {
         SQLitePCL.Batteries.Init();
 
@@ -67,6 +67,24 @@ public static class HabitDatabase
         connection.Close();
     }
 
+    public static void RemoveRecord(string tableName, int id)
+    {
+        SQLitePCL.Batteries.Init();
+
+        using SqliteConnection connection = new SqliteConnection(_connectionString);
+        connection.Open();
+
+        string removeFromHabitList = $"DELETE FROM '{tableName}' WHERE ID='{id}'";
+
+        using (SqliteCommand command = new SqliteCommand(removeFromHabitList, connection))
+        {
+            command.ExecuteNonQuery();
+        }
+
+        Console.WriteLine($"Removed record with ID {id} from habit {tableName}.");
+        connection.Close();
+    }
+
     public static void InsertData(string name, double amount)
     {
         SQLitePCL.Batteries.Init();
@@ -74,7 +92,6 @@ public static class HabitDatabase
         using SqliteConnection connection = new SqliteConnection(_connectionString);
         connection.Open();
 
-        // Create table of habits
         string query = $"INSERT INTO '{name}' (Amount, Time) VALUES ('{amount}', datetime())";
 
         using (SqliteCommand command = new SqliteCommand(query, connection))
@@ -86,7 +103,33 @@ public static class HabitDatabase
         connection.Close();
     }
 
-    public static void ReadAll(string tableName = "habits")
+    public static string ReadById(int tableId)
+    {
+        SQLitePCL.Batteries.Init();
+
+        string returnString = "";
+
+        using SqliteConnection connection = new SqliteConnection(_connectionString);
+        connection.Open();
+
+        string readTableName = $"SELECT Name FROM habits WHERE ID = '{tableId}'";
+
+        using (SqliteCommand command = new SqliteCommand(readTableName, connection))
+        {
+            using (SqliteDataReader reader = command.ExecuteReader())
+            {
+                if (reader.Read()) // Check if there are rows returned
+                {
+                    returnString = reader.GetString(0);
+                }
+            }
+        }
+
+        connection.Close();
+        return returnString;
+    }
+
+    public static List<int> ReadAll(string tableName = "habits")
     {
         SQLitePCL.Batteries.Init();
 
@@ -94,6 +137,7 @@ public static class HabitDatabase
         connection.Open();
 
         int columnCount;
+        List<int> ids = new List<int>();
 
         string query = $"SELECT * FROM '{tableName}'";
         string columnQuery = $"PRAGMA table_info('{tableName}')";
@@ -121,6 +165,7 @@ public static class HabitDatabase
                     while (reader.Read())
                     {
                         Console.Write("( ) ");
+                        ids.Add(reader.GetInt32(0));
 
                         for (int i = 0; i < columnCount; i++)
                         {
@@ -135,12 +180,13 @@ public static class HabitDatabase
                 else
                 {
                     Utils.ConsoleClear();
-                    Console.WriteLine("Error: No rows found.");
+                    Console.WriteLine("No data found.");
                 }
             }
         }
 
         connection.Close();
+        return ids;
     }
 
     // Just for testing purposes

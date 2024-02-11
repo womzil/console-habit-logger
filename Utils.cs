@@ -14,5 +14,11 @@ namespace habit_logger
 				Console.WriteLine("IOException - you can ignore it if you're using Visual Studio Code debugger.\n");
 			}
 		}
+
+        public static void PressAnyKeyToContinue()
+        {
+            Console.WriteLine("Press any key to continue.");
+            Console.ReadKey();
+        }
 	}
 }

@@ -5,7 +5,7 @@
         public static void MainMenu()
         {
             bool exit = false;
-            int numberOfOptions = 6;
+            int numberOfOptions = 4;
             int i = 0;
 
             Console.CursorVisible = false;
@@ -24,12 +24,10 @@
                 Console.WriteLine("You can use this program to log any habit/activity of choice.");
                 Console.WriteLine("");
                 Console.WriteLine("Please, choose what you want to do from the list below.");
-                Console.WriteLine($"({x[0]}) View list of habits");
-                Console.WriteLine($"({x[1]}) View data of a specific habit");
-                Console.WriteLine($"({x[2]}) Create a new habit");
-                Console.WriteLine($"({x[3]}) Add a new record to a habit");
-                Console.WriteLine($"({x[4]}) Create sample data");
-                Console.WriteLine($"({x[5]}) Exit");
+                Console.WriteLine($"({x[0]}) Habit browser & editor");
+                Console.WriteLine($"({x[1]}) Create a new habit");
+                Console.WriteLine($"({x[2]}) Create sample data");
+                Console.WriteLine($"({x[3]}) Exit");
 
                 ConsoleKey key = Console.ReadKey(true).Key;
                 switch (key)
@@ -58,11 +56,15 @@
                         HabitsEditor();
                         break;
 
-                    case 4:
+                    case 1:
+                        AddHabit();
+                        break;
+
+                    case 2:
                         CreateSampleData();
                         break;
 
-                    case 5:
+                    case 3:
                         Console.WriteLine("Are you sure you want to leave?");
                         Console.WriteLine("Press \"Enter\" to confirm or any other key to cancel.");
 
@@ -79,18 +81,26 @@
         {
             Utils.ConsoleClear();
 
-            HabitDatabase.ReadAll();
-            Console.WriteLine();
-            Console.WriteLine("Escape - Exit, A - Add a habit, R - Remove chosen habit, E - Edit chosen habit, Enter - View habit");
+            List<int> ids = HabitDatabase.ReadAll();
 
-            int linesUnderOptions = 3;
-            int numberOfOptions = Console.CursorTop - linesUnderOptions;
+            int numberOfOptions = Console.CursorTop - 1;
             int option = numberOfOptions;
-            int newLines = 0;
             bool exit = false;
 
-            Console.SetCursorPosition(1, option);
-            Console.Write("X");
+            if (ids.Count != 0)
+            {
+                Console.WriteLine();
+                Console.WriteLine("Escape - Exit, A - Add a habit, R - Remove chosen habit, E - Edit chosen habit, Enter - View habit");
+
+                Console.SetCursorPosition(1, option);
+                Console.Write("X");
+            }
+            else
+            {
+                Console.WriteLine("Please, create your first habit first.");
+                AddHabit();
+                exit = true;
+            }
 
             while (!exit)
             {
@@ -123,51 +133,31 @@
                         continue;
 
                     case ConsoleKey.Enter:
-                        HabitDataEditor("Water drunk");
+                        string readName = HabitDatabase.ReadById(ids[option]);
+                        HabitDataEditor(readName);
                         break;
 
                     case ConsoleKey.A:
                     case ConsoleKey.Add:
-                        newLines++;
-                        string? habitName;
-                        string? habitUnit;
+                        AddHabit();
+                        Utils.PressAnyKeyToContinue();
+                        exit = true;
+                        break;
 
-                        do
-                        {
-                            Console.SetCursorPosition(0, numberOfOptions + linesUnderOptions + newLines);
-                            Console.Write("Please, enter habit name: ");
-                            habitName = Console.ReadLine();
-
-                            if (string.IsNullOrEmpty(habitName))
-                            {
-                                Console.WriteLine("Incorrect habit name!");
-                                newLines++;
-                            }
-                        } while (string.IsNullOrEmpty(habitName));
-
-                        newLines++;
-                        do
-                        {
-                            Console.SetCursorPosition(0, numberOfOptions + linesUnderOptions + newLines);
-                            Console.Write("Please, enter habit unit: ");
-                            habitUnit = Console.ReadLine();
-
-                            if (string.IsNullOrEmpty(habitUnit))
-                            {
-                                Console.WriteLine("Incorrect habit unit!");
-                                newLines++;
-                            }
-                        } while (string.IsNullOrEmpty(habitUnit));
-
-                        HabitDatabase.Create(habitName, habitUnit);
+                    case ConsoleKey.E:
+                        Utils.ConsoleClear();
+                        Console.WriteLine("Not implemented yet!");
+                        Utils.PressAnyKeyToContinue();
+                        exit = true;
                         break;
 
                     case ConsoleKey.R:
-                        newLines++;
-                        Console.SetCursorPosition(0, numberOfOptions + linesUnderOptions + newLines);
-
+                        Utils.ConsoleClear();
                         Console.WriteLine("Are you sure? Press \"Enter\" to confirm or any other key to cancel.");
-                        if (Console.ReadKey(true).Key == ConsoleKey.Enter) HabitDatabase.Remove("Water drunk");
+
+                        string removeName = HabitDatabase.ReadById(ids[option]);
+                        if (Console.ReadKey(true).Key == ConsoleKey.Enter) HabitDatabase.RemoveHabit(removeName);
+                        exit = true;
                         break;
 
                     case ConsoleKey.Escape:
@@ -182,17 +172,26 @@
         {
             Utils.ConsoleClear();
 
-            HabitDatabase.ReadAll(habit);
-            Console.WriteLine();
-            Console.WriteLine("Escape - Exit, A - Add a record, R - Remove chosen record, E - Edit chosen record");
+            List<int> ids = HabitDatabase.ReadAll(habit);
 
-            int linesUnderOptions = 3;
-            int numberOfOptions = Console.CursorTop - linesUnderOptions;
+            int numberOfOptions = Console.CursorTop - 1;
             int option = numberOfOptions;
             bool exit = false;
 
-            Console.SetCursorPosition(1, option);
-            Console.Write("X");
+            if (ids.Count != 0)
+            {
+                Console.WriteLine();
+                Console.WriteLine("Escape - Exit, A - Add a record, R - Remove chosen record, E - Edit chosen record");
+
+                Console.SetCursorPosition(1, option);
+                Console.Write("X");
+            }
+            else
+            {
+                Console.WriteLine($"Please, create your first record for habit {habit} first.");
+                AddHabitRecord(habit);
+                exit = true;
+            }
 
             while (!exit)
             {
@@ -226,25 +225,23 @@
 
                     case ConsoleKey.A:
                     case ConsoleKey.Add:
-                        bool correctData;
-                        double amount;
-                        int newLines = 1;
+                        AddHabitRecord(habit);
+                        exit = true;
+                        break;
 
-                        do
-                        {
-                            Console.SetCursorPosition(0, numberOfOptions + linesUnderOptions + newLines);
-                            Console.Write("Please, enter the amount: ");
-                            correctData = double.TryParse(Console.ReadLine(), out amount);
+                    case ConsoleKey.E:
+                        Utils.ConsoleClear();
+                        Console.WriteLine("Not implemented yet!");
+                        Utils.PressAnyKeyToContinue();
+                        exit = true;
+                        break;
 
-                            if (!correctData)
-                            {
-                                Console.WriteLine("Incorrect number!");
-                                newLines++;
-                            }
-                        } while (!correctData);
+                    case ConsoleKey.R:
+                        Utils.ConsoleClear();
+                        Console.WriteLine("Are you sure? Press \"Enter\" to confirm or any other key to cancel.");
 
-
-                        // HabitDatabase.InsertData(option, amount);
+                        if (Console.ReadKey(true).Key == ConsoleKey.Enter) HabitDatabase.RemoveRecord(habit, ids[option]);
+                        exit = true;
                         break;
 
                     case ConsoleKey.Escape:
@@ -253,6 +250,61 @@
                         break;
                 }
             }
+        }
+
+        public static void AddHabit()
+        {
+            string? habitName;
+            string? habitUnit;
+
+            Utils.ConsoleClear();
+
+            do
+            {
+                Console.Write("Please, enter habit name: ");
+                habitName = Console.ReadLine();
+
+                if (string.IsNullOrEmpty(habitName))
+                {
+                    Console.WriteLine("Incorrect habit name!");
+                }
+            } while (string.IsNullOrEmpty(habitName));
+
+            do
+            {
+                Console.Write("Please, enter habit unit: ");
+                habitUnit = Console.ReadLine();
+
+                if (string.IsNullOrEmpty(habitUnit))
+                {
+                    Console.WriteLine("Incorrect habit unit!");
+                }
+            } while (string.IsNullOrEmpty(habitUnit));
+
+            HabitDatabase.Create(habitName, habitUnit);
+            Utils.PressAnyKeyToContinue();
+        }
+
+        public static void AddHabitRecord(string habit)
+        {
+            bool correctData;
+            double amount;
+
+            Utils.ConsoleClear();
+
+            do
+            {
+                Console.Write("Please, enter the amount: ");
+                correctData = double.TryParse(Console.ReadLine(), out amount);
+
+                if (!correctData)
+                {
+                    Console.WriteLine("Incorrect number!");
+                }
+            } while (!correctData);
+
+            HabitDatabase.InsertData(habit, amount);
+            Utils.PressAnyKeyToContinue();
         }
 
         public static void CreateSampleData()
