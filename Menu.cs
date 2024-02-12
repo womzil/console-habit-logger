@@ -83,7 +83,7 @@
 
             List<int> ids = HabitDatabase.ReadAll();
 
-            int numberOfOptions = Console.CursorTop - 1;
+            int numberOfOptions = Console.CursorTop - 3 < 0 ? Console.CursorTop - 1 : Console.CursorTop - 3;
             int option = numberOfOptions;
             bool exit = false;
 
@@ -172,21 +172,20 @@
         {
             Utils.ConsoleClear();
 
-            List<int> ids = HabitDatabase.ReadAll(habit);
+            long page = 1;
+            List<int> ids = HabitDatabase.ReadAll(habit, page);
 
-            int numberOfOptions = Console.CursorTop - 1;
+            int maxNumberOfLinesOnScreen = Console.WindowHeight;
+            long maxPages = HabitDatabase.NumberOfRows(habit) / (maxNumberOfLinesOnScreen - 5);
+
+            if (maxPages < 1)
+                maxPages = 1;
+
+            int numberOfOptions = Console.CursorTop - 5 < 0 ? Console.CursorTop - 3 : Console.CursorTop - 5;
             int option = numberOfOptions;
             bool exit = false;
 
-            if (ids.Count != 0)
-            {
-                Console.WriteLine();
-                Console.WriteLine("Escape - Exit, A - Add a record, R - Remove chosen record, E - Edit chosen record");
-
-                Console.SetCursorPosition(1, option);
-                Console.Write("X");
-            }
-            else
+            if (ids.Count == 0)
             {
                 Console.WriteLine($"Please, create your first record for habit {habit} first.");
                 AddHabitRecord(habit);
@@ -222,6 +221,26 @@
                         Console.SetCursorPosition(0, option);
                         Console.Write("(X)");
                         continue;
+
+                    case ConsoleKey.LeftArrow:
+                        if (page - 1 > 0)
+                            page--;
+                        else
+                            page = maxPages;
+
+                        Utils.ConsoleClear();
+                        ids = HabitDatabase.ReadAll(habit, page);
+                        break;
+
+                    case ConsoleKey.RightArrow:
+                        if (page + 1 > maxPages)
+                            page = 1;
+                        else
+                            page++;
+
+                        Utils.ConsoleClear();
+                        ids = HabitDatabase.ReadAll(habit, page);
+                        break;
 
                     case ConsoleKey.A:
                     case ConsoleKey.Add:

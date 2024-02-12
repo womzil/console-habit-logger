@@ -129,7 +129,7 @@ public static class HabitDatabase
         return returnString;
     }
 
-    public static List<int> ReadAll(string tableName = "habits")
+    public static List<int> ReadAll(string tableName = "habits", long page = 1)
     {
         SQLitePCL.Batteries.Init();
 
@@ -138,6 +138,11 @@ public static class HabitDatabase
 
         int columnCount;
         List<int> ids = new List<int>();
+        int maxNumberOfLinesOnScreen = Console.WindowHeight;
+        long maxPages = NumberOfRows(tableName) / (maxNumberOfLinesOnScreen - 5);
+
+        if (maxPages < 1)
+            maxPages = 1;
 
         string query = $"SELECT * FROM '{tableName}'";
         string columnQuery = $"PRAGMA table_info('{tableName}')";
@@ -162,9 +167,28 @@ public static class HabitDatabase
             {
                 if (reader.HasRows)
                 {
-                    while (reader.Read())
+                    int lineNumber = 0;
+                    bool stop = false;
+                    long nowReadingPage = 1;
+                    while (reader.Read() && !stop)
                     {
-                        Console.Write("( ) ");
+                        if (page != nowReadingPage)
+                        {
+                            lineNumber++;
+                            if (lineNumber == maxNumberOfLinesOnScreen - 4)
+                            {
+                                nowReadingPage++;
+                                lineNumber = 0;
+                            }
+                            else
+                            {
+                                continue;
+                            }
+                        }
+
+                        lineNumber++;
+
+                        Console.Write(lineNumber + 1 == maxNumberOfLinesOnScreen - 4 ? "(X) " : "( ) ");
                         ids.Add(reader.GetInt32(0));
 
                         for (int i = 0; i < columnCount; i++)
@@ -175,6 +199,14 @@ public static class HabitDatabase
                         }
 
                         Console.WriteLine();
+                        if (lineNumber + 1 == maxNumberOfLinesOnScreen - 4)
+                        {
+                            Console.WriteLine();
+                            Console.WriteLine($"Page {page}/{maxPages}");
+                            Console.WriteLine();
+                            Console.WriteLine("Escape - Exit, A - Add a record, R - Remove chosen record, E - Edit chosen record");
+                            stop = true;
+                        }
                     }
                 }
                 else
@@ -187,6 +219,28 @@ public static class HabitDatabase
 
         connection.Close();
         return ids;
+    }
+
+    public static long NumberOfRows(string tableName = "habits")
+    {
+        SQLitePCL.Batteries.Init();
+
+        using SqliteConnection connection = new SqliteConnection(_connectionString);
+        connection.Open();
+
+        long rowsCount = 0;
+
+        string query = $"SELECT COUNT(*) FROM '{tableName}'";
+
+        using (SqliteCommand command = new SqliteCommand(query, connection))
+        {
+            // ExecuteScalar returns the first column of the first row in the result set
+            // or a null reference if the result set is empty.
+            rowsCount = (long)command.ExecuteScalar();
+        }
+
+        connection.Close();
+        return rowsCount;
     }
 
     // Just for testing purposes
