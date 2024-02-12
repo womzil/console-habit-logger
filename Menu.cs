@@ -53,7 +53,7 @@
                 switch (i)
                 {
                     case 0:
-                        HabitsEditor();
+                        Editor("habits");
                         break;
 
                     case 1:
@@ -89,6 +89,9 @@
 
             if (ids.Count != 0)
             {
+                if (option > ids.Count)
+                    option = 1;
+
                 Console.WriteLine();
                 Console.WriteLine("Escape - Exit, A - Add a habit, R - Remove chosen habit, E - Edit chosen habit, Enter - View habit");
 
@@ -191,6 +194,13 @@
                 AddHabitRecord(habit);
                 exit = true;
             }
+            else
+            {
+                Console.WriteLine();
+                Console.WriteLine($"Page {page}/{maxPages}");
+                Console.WriteLine();
+                Console.WriteLine("Escape - Exit, A - Add a record, R - Remove chosen record, E - Edit chosen record");
+            }
 
             while (!exit)
             {
@@ -269,6 +279,160 @@
                         break;
                 }
             }
+        }
+
+        public static void Editor(string table = "habits")
+        {
+            Utils.ConsoleClear();
+
+            // Whether this function is used to edit habits or record of a specific habit
+            bool editorOfHabits = table == "habits";
+
+            long page = 1;
+            List<int> ids = HabitDatabase.ReadAll(table, page);
+
+            int maxNumberOfLinesOnScreen = Console.WindowHeight;
+            long maxPages = (long)Math.Ceiling((double)HabitDatabase.NumberOfRows(table) / (maxNumberOfLinesOnScreen - 5));
+
+            if (maxPages < 1)
+                maxPages = 1;
+
+            int numberOfOptions = ids.Count;
+            int option = numberOfOptions;
+            bool exit = false;
+
+            if (ids.Count == 0)
+            {
+                Console.WriteLine($"Please, create your first record for habit {table} first.");
+                AddHabitRecord(table);
+                exit = true;
+            }
+            else
+            {
+                EditorFooter(option, ids, page, maxPages, editorOfHabits);
+            }
+
+            while (!exit)
+            {
+                ConsoleKey key = Console.ReadKey(true).Key;
+
+                switch (key)
+                {
+                    case ConsoleKey.UpArrow:
+                    case ConsoleKey.W:
+                        Console.SetCursorPosition(0, option);
+                        Console.Write("( )");
+                        option--;
+                        if (option < 0)
+                            option = numberOfOptions;
+
+                        Console.SetCursorPosition(0, option);
+                        Console.Write("(X)");
+                        continue;
+
+                    case ConsoleKey.DownArrow:
+                    case ConsoleKey.S:
+                        Console.SetCursorPosition(0, option);
+                        Console.Write("( )");
+                        option++;
+                        if (option > numberOfOptions)
+                            option = 0;
+
+                        Console.SetCursorPosition(0, option);
+                        Console.Write("(X)");
+                        continue;
+
+                    case ConsoleKey.LeftArrow:
+                        if (page - 1 > 0)
+                            page--;
+                        else
+                            page = maxPages;
+
+                        Utils.ConsoleClear();
+                        ids = HabitDatabase.ReadAll(table, page);
+                        EditorFooter(option, ids, page, maxPages, editorOfHabits);
+                        break;
+
+                    case ConsoleKey.RightArrow:
+                        if (page + 1 > maxPages)
+                            page = 1;
+                        else
+                            page++;
+
+                        numberOfOptions = ids.Count;
+                        option = numberOfOptions;
+
+                        Utils.ConsoleClear();
+                        ids = HabitDatabase.ReadAll(table, page);
+                        EditorFooter(option, ids, page, maxPages, editorOfHabits);
+                        break;
+
+                    case ConsoleKey.Enter:
+                        if (editorOfHabits)
+                        {
+                            string readName = HabitDatabase.ReadById(ids[option]);
+                            Editor(readName);
+                        }
+
+                        break;
+
+                    case ConsoleKey.A:
+                    case ConsoleKey.Add:
+                        if (editorOfHabits)
+                            AddHabit();
+                        else
+                            AddHabitRecord(table);
+
+                        exit = true;
+                        break;
+
+                    case ConsoleKey.E:
+                        Utils.ConsoleClear();
+                        Console.WriteLine("Not implemented yet!");
+                        Utils.PressAnyKeyToContinue();
+                        exit = true;
+                        break;
+
+                    case ConsoleKey.R:
+                        Utils.ConsoleClear();
+                        Console.WriteLine("Are you sure? Press \"Enter\" to confirm or any other key to cancel.");
+
+                        if (Console.ReadKey(true).Key == ConsoleKey.Enter)
+                        {
+                            if (editorOfHabits)
+                            {
+                                string removeName = HabitDatabase.ReadById(ids[option]);
+                                HabitDatabase.RemoveHabit(removeName);
+                            }
+                            else
+                                HabitDatabase.RemoveRecord(table, ids[option]);
+                        }
+
+                        exit = true;
+                        break;
+
+                    case ConsoleKey.Escape:
+                    case ConsoleKey.Backspace:
+                        exit = true;
+                        break;
+                }
+            }
+        }
+
+        public static void EditorFooter(int option, List<int> ids, long page, long maxPages, bool editorOfHabits)
+        {
+            if (option > ids.Count)
+                option = ids.Count;
+
+            Console.WriteLine();
+            Console.WriteLine($"Page {page}/{maxPages}");
+            Console.WriteLine();
+            Console.WriteLine(editorOfHabits
+                ? "Escape - Exit, A - Add a habit, R - Remove chosen habit, E - Edit chosen habit, Enter - View habit"
+                : "Escape - Exit, A - Add a record, R - Remove chosen record, E - Edit chosen record");
+
+            Console.SetCursorPosition(1, option);
+            Console.Write("X");
         }
 
         public static void AddHabit()

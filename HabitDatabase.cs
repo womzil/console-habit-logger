@@ -138,13 +138,9 @@ public static class HabitDatabase
 
         int columnCount;
         List<int> ids = new List<int>();
-        int maxNumberOfLinesOnScreen = Console.WindowHeight;
-        long maxPages = NumberOfRows(tableName) / (maxNumberOfLinesOnScreen - 5);
+        int maxNumberOfLinesOnScreen = Console.WindowHeight - 5;
 
-        if (maxPages < 1)
-            maxPages = 1;
-
-        string query = $"SELECT * FROM '{tableName}'";
+        string query = $"SELECT * FROM '{tableName}' LIMIT {maxNumberOfLinesOnScreen} OFFSET {maxNumberOfLinesOnScreen * (page - 1)}";
         string columnQuery = $"PRAGMA table_info('{tableName}')";
 
         using (SqliteCommand schemaCommand = new SqliteCommand(columnQuery, connection))
@@ -167,28 +163,9 @@ public static class HabitDatabase
             {
                 if (reader.HasRows)
                 {
-                    int lineNumber = 0;
-                    bool stop = false;
-                    long nowReadingPage = 1;
-                    while (reader.Read() && !stop)
+                    while (reader.Read())
                     {
-                        if (page != nowReadingPage)
-                        {
-                            lineNumber++;
-                            if (lineNumber == maxNumberOfLinesOnScreen - 4)
-                            {
-                                nowReadingPage++;
-                                lineNumber = 0;
-                            }
-                            else
-                            {
-                                continue;
-                            }
-                        }
-
-                        lineNumber++;
-
-                        Console.Write(lineNumber + 1 == maxNumberOfLinesOnScreen - 4 ? "(X) " : "( ) ");
+                        Console.Write("( ) ");
                         ids.Add(reader.GetInt32(0));
 
                         for (int i = 0; i < columnCount; i++)
@@ -197,16 +174,7 @@ public static class HabitDatabase
                             if (i + 1 != columnCount)
                                 Console.Write(" | ");
                         }
-
                         Console.WriteLine();
-                        if (lineNumber + 1 == maxNumberOfLinesOnScreen - 4)
-                        {
-                            Console.WriteLine();
-                            Console.WriteLine($"Page {page}/{maxPages}");
-                            Console.WriteLine();
-                            Console.WriteLine("Escape - Exit, A - Add a record, R - Remove chosen record, E - Edit chosen record");
-                            stop = true;
-                        }
                     }
                 }
                 else
