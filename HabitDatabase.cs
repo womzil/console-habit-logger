@@ -43,6 +43,33 @@ public static class HabitDatabase
         connection.Close();
     }
 
+    public static void Edit(string tableName, string unit)
+    {
+        SQLitePCL.Batteries.Init();
+
+        using SqliteConnection connection = new SqliteConnection(_connectionString);
+        connection.Open();
+
+        // Create table of habits
+        List<string> queries = [];
+
+        queries.Add($"ALTER TABLE habits (Name, Unit) RENAME COLUMN '{tableName}', '{unit}' WHERE NOT EXISTS (SELECT 1 FROM sqlite_master WHERE type='table' AND name='{tableName}')");
+
+        // Create habit table
+        queries.Add($"CREATE TABLE IF NOT EXISTS '{tableName}' (ID INTEGER PRIMARY KEY, Amount REAL, Time TEXT)");
+
+        for (int i = 0; i < queries.Count; i++)
+        {
+            using (SqliteCommand command = new SqliteCommand(queries[i], connection))
+            {
+                command.ExecuteNonQuery();
+                Console.WriteLine(i == 0 ? "Table of habits created successfully." : $"Habit table '{tableName}' created successfully.");
+            }
+        }
+
+        connection.Close();
+    }
+
     public static void RemoveHabit(string tableName)
     {
         SQLitePCL.Batteries.Init();
