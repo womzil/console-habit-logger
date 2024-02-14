@@ -27,7 +27,8 @@
                 Console.WriteLine($"({x[0]}) Habit browser & editor");
                 Console.WriteLine($"({x[1]}) Create a new habit");
                 Console.WriteLine($"({x[2]}) Create sample data");
-                Console.WriteLine($"({x[3]}) Exit");
+                Console.WriteLine($"({x[3]}) Settings");
+                Console.WriteLine($"({x[4]}) Exit");
 
                 ConsoleKey key = Console.ReadKey(true).Key;
                 switch (key)
@@ -65,6 +66,10 @@
                         break;
 
                     case 3:
+                        Settings();
+                        break;
+
+                    case 4:
                         Console.WriteLine("Are you sure you want to leave?");
                         Console.WriteLine("Press \"Enter\" to confirm or any other key to cancel.");
 
@@ -75,6 +80,13 @@
                         break;
                 }
             }
+        }
+
+        public static void Settings()
+        {
+            Utils.ConsoleClear();
+            Console.WriteLine("To be added.");
+            Utils.PressAnyKeyToContinue();
         }
 
         public static void Editor(string table = "habits")
