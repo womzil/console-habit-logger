@@ -187,9 +187,9 @@
 
                     case ConsoleKey.E:
                         if (editorOfHabits)
-                            EditHabit();
+                            EditHabit(ids[option]);
                         else
-                            EditHabitRecord(table);
+                            EditHabitRecord(ids[option], table);
 
                         exit = true;
                         break;
@@ -265,7 +265,7 @@
                 }
             } while (string.IsNullOrEmpty(habitUnit));
 
-            HabitDatabase.Create(habitName, habitUnit);
+            HabitDatabase.CreateHabit(habitName, habitUnit);
             Utils.PressAnyKeyToContinue();
         }
 
@@ -287,11 +287,11 @@
                 }
             } while (!correctData);
 
-            HabitDatabase.InsertData(habit, amount);
+            HabitDatabase.CreateRecord(habit, amount);
             Utils.PressAnyKeyToContinue();
         }
 
-        public static void EditHabit()
+        public static void EditHabit(int id)
         {
             string? habitName;
             string? habitUnit;
@@ -320,11 +320,11 @@
                 }
             } while (string.IsNullOrEmpty(habitUnit));
 
-            HabitDatabase.Create(habitName, habitUnit);
+            HabitDatabase.Edit(id, habitName, habitUnit);
             Utils.PressAnyKeyToContinue();
         }
 
-        public static void EditHabitRecord(string habit)
+        public static void EditHabitRecord(int id, string habit)
         {
             bool correctData;
             double amount;
@@ -342,7 +342,7 @@
                 }
             } while (!correctData);
 
-            HabitDatabase.InsertData(habit, amount);
+            HabitDatabase.EditRecord(id, habit, amount);
             Utils.PressAnyKeyToContinue();
         }
 

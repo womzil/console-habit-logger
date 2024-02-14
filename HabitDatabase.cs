@@ -16,19 +16,19 @@ public static class HabitDatabase
 {
     static string _connectionString = "Data Source=habit-logger.sqlite;";
 
-    public static void Create(string tableName, string unit)
+    public static void CreateHabit(string tableName, string unit)
     {
         SQLitePCL.Batteries.Init();
 
         using SqliteConnection connection = new SqliteConnection(_connectionString);
         connection.Open();
 
-        // Create table of habits
+        // CreateHabit table of habits
         List<string> queries = ["CREATE TABLE IF NOT EXISTS habits (ID INTEGER PRIMARY KEY, Name TEXT, Unit TEXT)"];
 
         queries.Add($"INSERT INTO habits (Name, Unit) SELECT '{tableName}', '{unit}' WHERE NOT EXISTS (SELECT 1 FROM sqlite_master WHERE type='table' AND name='{tableName}')");
 
-        // Create habit table
+        // CreateHabit habit table
         queries.Add($"CREATE TABLE IF NOT EXISTS '{tableName}' (ID INTEGER PRIMARY KEY, Amount REAL, Time TEXT)");
 
         for (int i = 0; i < queries.Count; i++)
@@ -43,27 +43,24 @@ public static class HabitDatabase
         connection.Close();
     }
 
-    public static void Edit(string tableName, string unit)
+    public static void Edit(int id, string newTableName, string unit)
     {
         SQLitePCL.Batteries.Init();
 
         using SqliteConnection connection = new SqliteConnection(_connectionString);
         connection.Open();
 
-        // Create table of habits
         List<string> queries = [];
 
-        queries.Add($"ALTER TABLE habits (Name, Unit) RENAME COLUMN '{tableName}', '{unit}' WHERE NOT EXISTS (SELECT 1 FROM sqlite_master WHERE type='table' AND name='{tableName}')");
-
-        // Create habit table
-        queries.Add($"CREATE TABLE IF NOT EXISTS '{tableName}' (ID INTEGER PRIMARY KEY, Amount REAL, Time TEXT)");
+        queries.Add($"UPDATE habits SET Name = '{newTableName}', Unit = '{unit}' WHERE ID = {id}");
+        queries.Add($"ALTER TABLE '{ReadById(id)}' RENAME TO '{newTableName}'");
 
         for (int i = 0; i < queries.Count; i++)
         {
             using (SqliteCommand command = new SqliteCommand(queries[i], connection))
             {
                 command.ExecuteNonQuery();
-                Console.WriteLine(i == 0 ? "Table of habits created successfully." : $"Habit table '{tableName}' created successfully.");
+                Console.WriteLine(i == 0 ? "Table of habits edited successfully." : $"Habit table \"{newTableName}\" with unit \"{unit}\" edited successfully.");
             }
         }
 
@@ -112,7 +109,7 @@ public static class HabitDatabase
         connection.Close();
     }
 
-    public static void InsertData(string name, double amount)
+    public static void CreateRecord(string name, double amount)
     {
         SQLitePCL.Batteries.Init();
 
@@ -125,6 +122,24 @@ public static class HabitDatabase
         {
             command.ExecuteNonQuery();
             Console.WriteLine($"Added new entry with value of '{amount}' to the habit '{name}' successfully.");
+        }
+
+        connection.Close();
+    }
+
+    public static void EditRecord(int id, string tableName, double amount)
+    {
+        SQLitePCL.Batteries.Init();
+
+        using SqliteConnection connection = new SqliteConnection(_connectionString);
+        connection.Open();
+
+        string query = $"UPDATE {tableName} SET Amount = '{amount}' WHERE ID = {id}";
+
+        using (SqliteCommand command = new SqliteCommand(query, connection))
+        {
+            command.ExecuteNonQuery();
+            Console.WriteLine($"Habit record in \"{tableName}\" edited to {amount} successfully.");
         }
 
         connection.Close();
@@ -241,12 +256,12 @@ public static class HabitDatabase
     // Just for testing purposes
     public static void CreateSampleData()
     {
-        Create("Water drunk", "litres (l)");
+        CreateHabit("Water drunk", "litres (l)");
         for (int i = 0; i < 1000; i++)
         {
             double randomNumber = new Random().NextDouble() * 5;
             Console.Write($"{i + 1}. ");
-            InsertData("Water drunk", randomNumber);
+            CreateRecord("Water drunk", randomNumber);
         }
     }
 }
