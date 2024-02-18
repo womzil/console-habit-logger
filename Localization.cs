@@ -6,9 +6,9 @@ static class Localization
 {
     private static Dictionary<string, string> localizedStrings;
 
-    public static void Initiate(string language)
+    public static void Initiate(string languageCode)
     {
-        string filePath = $"{language}.yaml";
+        string filePath = $"./Locale/{languageCode}.yaml";
 
         if (File.Exists(filePath))
         {
@@ -19,7 +19,7 @@ static class Localization
         else
         {
             // Fallback to English if the language file is missing
-            string defaultFilePath = "en.yaml";
+            string defaultFilePath = "./Locale/en.yaml";
             string yamlContent = File.ReadAllText(defaultFilePath);
             IDeserializer deserializer = new DeserializerBuilder().Build();
             localizedStrings = deserializer.Deserialize<Dictionary<string, string>>(yamlContent);

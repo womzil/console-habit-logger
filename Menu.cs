@@ -5,7 +5,7 @@
         public static void MainMenu()
         {
             bool exit = false;
-            int numberOfOptions = 4;
+            int numberOfOptions = 5;
             int i = 0;
 
             Console.CursorVisible = false;
@@ -18,8 +18,8 @@
 
                 Utils.ConsoleClear();
 
-                Console.WriteLine("Welcome to the habit logger created by womzil.");
-                Console.WriteLine("Please, note that VS Code debug terminal is not supported.");
+                Console.WriteLine(Localization.GetString("welcome_message"));
+                Console.WriteLine(Localization.GetString("warning_vscode"));
                 Console.WriteLine();
                 Console.WriteLine("You can use this program to log any habit/activity of choice.");
                 Console.WriteLine("");

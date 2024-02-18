@@ -6,8 +6,11 @@ internal static class Program
 {
     static void Main()
     {
-        Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture("en-US");
-        Localization.Initiate("en");
+        CultureInfo ci = CultureInfo.InstalledUICulture;
+        string languageCode = ci.TwoLetterISOLanguageName;
+        
+        Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture(languageCode);
+        Localization.Initiate(languageCode);
 
         Menu.MainMenu();
     }

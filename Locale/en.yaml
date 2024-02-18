@@ -1,1 +1,4 @@
+# Main menu
+
 welcome_message: Welcome to the habit logger created by womzil.
+warning_vscode: Please, note that VS Code debug terminal is not supported.
