@@ -3,9 +3,10 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net8.0</TargetFramework>
-    <RootNamespace>habit_logger</RootNamespace>
+    <RootNamespace>$(MSBuildProjectName)</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <StartupObject>ConsoleHabitLogger.Program</StartupObject>
   </PropertyGroup>
 
   <ItemGroup>
@@ -17,13 +18,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Locale\en.yaml">
+    <None Update="ConsoleHabbitLoger\Locale\en.yaml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Locale\pl.yaml">
+    <None Update="ConsoleHabbitLoger\Locale\pl.yaml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Locale\es.yaml">
+    <None Update="ConsoleHabbitLoger\Locale\es.yaml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

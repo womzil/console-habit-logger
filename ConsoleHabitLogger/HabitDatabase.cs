@@ -10,7 +10,7 @@
 
 using Microsoft.Data.Sqlite;
 
-namespace habit_logger;
+namespace ConsoleHabitLogger;
 
 public static class HabitDatabase
 {

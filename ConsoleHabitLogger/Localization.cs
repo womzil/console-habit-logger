@@ -1,6 +1,6 @@
 ﻿using YamlDotNet.Serialization;
 
-namespace habit_logger;
+namespace ConsoleHabitLogger;
 
 static class Localization
 {
@@ -25,7 +25,7 @@ static class Localization
             localizedStrings = deserializer.Deserialize<Dictionary<string, string>>(yamlContent);
         }
     }
-    
+
     public static string GetString(string key)
     {
         if (localizedStrings.ContainsKey(key))

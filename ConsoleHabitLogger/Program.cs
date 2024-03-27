@@ -1,6 +1,6 @@
 ﻿using System.Globalization;
 
-namespace habit_logger;
+namespace ConsoleHabitLogger;
 
 internal static class Program
 {
@@ -8,10 +8,11 @@ internal static class Program
     {
         CultureInfo ci = CultureInfo.InstalledUICulture;
         string languageCode = ci.TwoLetterISOLanguageName;
-        
+
         Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture(languageCode);
         Localization.Initiate(languageCode);
 
-        Menu.MainMenu();
+        while (true)
+            Menu.MainMenu();
     }
 }
