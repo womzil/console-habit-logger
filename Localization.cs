@@ -31,6 +31,7 @@ static class Localization
         if (localizedStrings.ContainsKey(key))
             return localizedStrings[key];
         else
-            return key; // Return the key itself if the translation is not found
+            // Return the key itself if the translation is not found
+            return key;
     }
 }

@@ -1,84 +1,55 @@
-﻿namespace habit_logger
+﻿using Spectre.Console;
+
+namespace habit_logger
 {
     internal class Menu
     {
         public static void MainMenu()
         {
-            bool exit = false;
-            int numberOfOptions = 5;
-            int i = 0;
-
             Console.CursorVisible = false;
 
-            while (!exit)
+            Utils.ConsoleClear();
+
+            AnsiConsole.Write(new Rows(
+                new Text(Localization.GetString("welcome_message")),
+                new Text(Localization.GetString("warning_vscode")),
+                new Text(""),
+                new Text("You can use this program to log any habit/activity of choice."),
+                new Text("")
+            ));
+
+            string option = AnsiConsole.Prompt(
+                new SelectionPrompt<string>()
+                    .Title("Please, choose what you want to do from the list below.")
+                    .PageSize(10)
+                    .MoreChoicesText("[grey](Move up and down to reveal more options)[/]")
+                    .AddChoices([
+                        "Editor", "Create habit", "Create sample data", "Settings", "Exit"
+                    ]));
+
+            switch (option)
             {
-                string[] x = new string[numberOfOptions];
-                Array.Fill(x, " ");
-                x[i] = "X";
+                case "Editor":
+                    Editor("habits");
+                    break;
 
-                Utils.ConsoleClear();
+                case "Create habit":
+                    AddHabit();
+                    break;
 
-                Console.WriteLine(Localization.GetString("welcome_message"));
-                Console.WriteLine(Localization.GetString("warning_vscode"));
-                Console.WriteLine();
-                Console.WriteLine("You can use this program to log any habit/activity of choice.");
-                Console.WriteLine("");
-                Console.WriteLine("Please, choose what you want to do from the list below.");
-                Console.WriteLine($"({x[0]}) Habit browser & editor");
-                Console.WriteLine($"({x[1]}) Create a new habit");
-                Console.WriteLine($"({x[2]}) Create sample data");
-                Console.WriteLine($"({x[3]}) Settings");
-                Console.WriteLine($"({x[4]}) Exit");
+                case "Create sample data":
+                    CreateSampleData();
+                    break;
 
-                ConsoleKey key = Console.ReadKey(true).Key;
-                switch (key)
-                {
-                    case ConsoleKey.UpArrow:
-                    case ConsoleKey.W:
-                        i--;
-                        if (i < 0)
-                            i = numberOfOptions - 1;
-                        continue;
-                    case ConsoleKey.DownArrow:
-                    case ConsoleKey.S:
-                        i++;
-                        if (i >= numberOfOptions)
-                            i = 0;
-                        continue;
-                    case ConsoleKey.Enter:
-                        break;
-                    default:
-                        continue;
-                }
+                case "Settings":
+                    Settings();
+                    break;
 
-                switch (i)
-                {
-                    case 0:
-                        Editor("habits");
-                        break;
-
-                    case 1:
-                        AddHabit();
-                        break;
-
-                    case 2:
-                        CreateSampleData();
-                        break;
-
-                    case 3:
-                        Settings();
-                        break;
-
-                    case 4:
-                        Console.WriteLine("Are you sure you want to leave?");
-                        Console.WriteLine("Press \"Enter\" to confirm or any other key to cancel.");
-
-                        key = Console.ReadKey(true).Key;
-                        if (key == ConsoleKey.Enter)
-                            exit = true;
-
-                        break;
-                }
+                case "Exit":
+                    if (AnsiConsole.Confirm("Are you sure you want to leave?"))
+                        AnsiConsole.MarkupLine("Leaving...");
+                    else MainMenu();
+                    break;
             }
         }
 
@@ -100,7 +71,8 @@
             List<int> ids = HabitDatabase.ReadAll(table, page);
 
             int maxNumberOfLinesOnScreen = Console.WindowHeight;
-            long maxPages = (long)Math.Ceiling((double)HabitDatabase.NumberOfRows(table) / (maxNumberOfLinesOnScreen - 5));
+            long maxPages =
+                (long)Math.Ceiling((double)HabitDatabase.NumberOfRows(table) / (maxNumberOfLinesOnScreen - 5));
 
             if (maxPages < 1)
                 maxPages = 1;
@@ -363,7 +335,8 @@
             Utils.ConsoleClear();
 
             Console.WriteLine("Do you really want to create sample data?");
-            Console.WriteLine("It will create 1000 random records of a habit named \"Drunk water\", with the unit \"(l) Litres\".");
+            Console.WriteLine(
+                "It will create 1000 random records of a habit named \"Drunk water\", with the unit \"(l) Litres\".");
             Console.WriteLine("Press \"Enter\" to confirm or any other key to cancel.");
 
             ConsoleKey key = Console.ReadKey().Key;
