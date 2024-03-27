@@ -1,4 +1,4 @@
-# CLI Habit Logger
+# Console Habit Logger
 This is a very simple habit logger made in C# using Visual Studio 2022. It uses ADO.NET to execute querries in an SQLite database.
 
 ## Features
