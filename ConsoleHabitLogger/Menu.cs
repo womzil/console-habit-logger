@@ -1,4 +1,5 @@
-﻿using Spectre.Console;
+﻿using ConsoleHabitLogger.Database.AccessType;
+using Spectre.Console;
 
 namespace ConsoleHabitLogger;
 
@@ -68,11 +69,11 @@ internal class Menu
         bool editorOfHabits = table == "habits";
 
         long page = 1;
-        List<int> ids = HabitDatabase.ReadAll(table, page);
+        List<int> ids = Sqlite.ReadAll(table, page);
 
         int maxNumberOfLinesOnScreen = Console.WindowHeight;
         long maxPages =
-            (long)Math.Ceiling((double)HabitDatabase.NumberOfRows(table) / (maxNumberOfLinesOnScreen - 5));
+            (long)Math.Ceiling((double)Sqlite.NumberOfRows(table) / (maxNumberOfLinesOnScreen - 5));
 
         if (maxPages < 1)
             maxPages = 1;
@@ -129,7 +130,7 @@ internal class Menu
                         page = maxPages;
 
                     Utils.ConsoleClear();
-                    ids = HabitDatabase.ReadAll(table, page);
+                    ids = Sqlite.ReadAll(table, page);
                     EditorFooter(option, ids, page, maxPages, editorOfHabits);
 
                     numberOfOptions = ids.Count - 1;
@@ -143,7 +144,7 @@ internal class Menu
                         page++;
 
                     Utils.ConsoleClear();
-                    ids = HabitDatabase.ReadAll(table, page);
+                    ids = Sqlite.ReadAll(table, page);
                     EditorFooter(option, ids, page, maxPages, editorOfHabits);
 
                     numberOfOptions = ids.Count - 1;
@@ -153,7 +154,7 @@ internal class Menu
                 case ConsoleKey.Enter:
                     if (editorOfHabits)
                     {
-                        string readName = HabitDatabase.ReadById(ids[option]);
+                        string readName = Sqlite.ReadById(ids[option]);
                         Editor(readName);
                     }
 
@@ -186,11 +187,11 @@ internal class Menu
                     {
                         if (editorOfHabits)
                         {
-                            string removeName = HabitDatabase.ReadById(ids[option]);
-                            HabitDatabase.RemoveHabit(removeName);
+                            string removeName = Sqlite.ReadById(ids[option]);
+                            Sqlite.RemoveHabit(removeName);
                         }
                         else
-                            HabitDatabase.RemoveRecord(table, ids[option]);
+                            Sqlite.RemoveRecord(table, ids[option]);
                     }
 
                     exit = true;
@@ -249,7 +250,7 @@ internal class Menu
             }
         } while (string.IsNullOrEmpty(habitUnit));
 
-        HabitDatabase.CreateHabit(habitName, habitUnit);
+        Sqlite.CreateHabit(habitName, habitUnit);
         Utils.PressAnyKeyToContinue();
     }
 
@@ -271,7 +272,7 @@ internal class Menu
             }
         } while (!correctData);
 
-        HabitDatabase.CreateRecord(habit, amount);
+        Sqlite.CreateRecord(habit, amount);
         Utils.PressAnyKeyToContinue();
     }
 
@@ -304,7 +305,7 @@ internal class Menu
             }
         } while (string.IsNullOrEmpty(habitUnit));
 
-        HabitDatabase.Edit(id, habitName, habitUnit);
+        Sqlite.Edit(id, habitName, habitUnit);
         Utils.PressAnyKeyToContinue();
     }
 
@@ -326,7 +327,7 @@ internal class Menu
             }
         } while (!correctData);
 
-        HabitDatabase.EditRecord(id, habit, amount);
+        Sqlite.EditRecord(id, habit, amount);
         Utils.PressAnyKeyToContinue();
     }
 
@@ -343,7 +344,7 @@ internal class Menu
         if (key == ConsoleKey.Enter)
         {
             Utils.ConsoleClear();
-            HabitDatabase.CreateSampleData();
+            Sqlite.CreateSampleData();
             Console.WriteLine();
             Console.WriteLine("Press any key to return to the main menu.");
             Console.ReadKey();

@@ -1,16 +1,20 @@
-﻿using System.Globalization;
+﻿
+using Microsoft.Extensions.Configuration;
 
 namespace ConsoleHabitLogger;
 
-internal static class Program
+public class Program
 {
+    public static IConfiguration Config = new ConfigurationBuilder()
+        .AddXmlFile("config.xml")
+        .Build();
+
     static void Main()
     {
-        CultureInfo ci = CultureInfo.InstalledUICulture;
-        string languageCode = ci.TwoLetterISOLanguageName;
+        Localization.Initiate();
 
-        Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture(languageCode);
-        Localization.Initiate(languageCode);
+        if (string.IsNullOrEmpty(Config["database:connection_string"]))
+            throw new InvalidDataException("Connection type cannot be empty. Please, check the application config.");
 
         while (true)
             Menu.MainMenu();

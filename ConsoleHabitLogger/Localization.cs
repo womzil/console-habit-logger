@@ -1,4 +1,5 @@
-﻿using YamlDotNet.Serialization;
+﻿using System.Globalization;
+using YamlDotNet.Serialization;
 
 namespace ConsoleHabitLogger;
 
@@ -6,9 +7,24 @@ static class Localization
 {
     private static Dictionary<string, string> localizedStrings;
 
-    public static void Initiate(string languageCode)
+    public static void Initiate()
     {
+        CultureInfo ci = CultureInfo.InstalledUICulture;
+        string languageCode = ci.TwoLetterISOLanguageName;
         string filePath = $"./Locale/{languageCode}.yaml";
+
+        if (Program.Config["locale:language"] != null && Program.Config["locale:language"] != "default")
+            languageCode = Program.Config["locale:language"];
+
+        // Check if a culture with that language code exists
+        bool correctLanguageCode = CultureInfo
+            .GetCultures(CultureTypes.AllCultures)
+            .Any(culture => culture.TwoLetterISOLanguageName == languageCode);
+
+        if (correctLanguageCode)
+            Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture(languageCode);
+        else
+            languageCode = ci.TwoLetterISOLanguageName;
 
         if (File.Exists(filePath))
         {
@@ -30,8 +46,8 @@ static class Localization
     {
         if (localizedStrings.ContainsKey(key))
             return localizedStrings[key];
-        else
-            // Return the key itself if the translation is not found
-            return key;
+
+        // Return the key itself if the translation is not found
+        return key;
     }
 }

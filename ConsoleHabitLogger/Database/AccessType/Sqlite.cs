@@ -10,17 +10,17 @@
 
 using Microsoft.Data.Sqlite;
 
-namespace ConsoleHabitLogger;
+namespace ConsoleHabitLogger.Database.AccessType;
 
-public static class HabitDatabase
+public static class Sqlite
 {
-    static string _connectionString = "Data Source=habit-logger.sqlite;";
+    static readonly string ConnectionString = Program.Config["database:connection_string"];
 
     public static void CreateHabit(string tableName, string unit)
     {
         SQLitePCL.Batteries.Init();
 
-        using SqliteConnection connection = new SqliteConnection(_connectionString);
+        using SqliteConnection connection = new SqliteConnection(ConnectionString);
         connection.Open();
 
         // CreateHabit table of habits
@@ -47,7 +47,7 @@ public static class HabitDatabase
     {
         SQLitePCL.Batteries.Init();
 
-        using SqliteConnection connection = new SqliteConnection(_connectionString);
+        using SqliteConnection connection = new SqliteConnection(ConnectionString);
         connection.Open();
 
         List<string> queries = [];
@@ -71,7 +71,7 @@ public static class HabitDatabase
     {
         SQLitePCL.Batteries.Init();
 
-        using SqliteConnection connection = new SqliteConnection(_connectionString);
+        using SqliteConnection connection = new SqliteConnection(ConnectionString);
         connection.Open();
 
         string removeTable = $"DROP TABLE '{tableName}'";
@@ -95,7 +95,7 @@ public static class HabitDatabase
     {
         SQLitePCL.Batteries.Init();
 
-        using SqliteConnection connection = new SqliteConnection(_connectionString);
+        using SqliteConnection connection = new SqliteConnection(ConnectionString);
         connection.Open();
 
         string removeFromHabitList = $"DELETE FROM '{tableName}' WHERE ID='{id}'";
@@ -113,7 +113,7 @@ public static class HabitDatabase
     {
         SQLitePCL.Batteries.Init();
 
-        using SqliteConnection connection = new SqliteConnection(_connectionString);
+        using SqliteConnection connection = new SqliteConnection(ConnectionString);
         connection.Open();
 
         string query = $"INSERT INTO '{name}' (Amount, Time) VALUES ('{amount}', datetime())";
@@ -131,7 +131,7 @@ public static class HabitDatabase
     {
         SQLitePCL.Batteries.Init();
 
-        using SqliteConnection connection = new SqliteConnection(_connectionString);
+        using SqliteConnection connection = new SqliteConnection(ConnectionString);
         connection.Open();
 
         string query = $"UPDATE {tableName} SET Amount = '{amount}' WHERE ID = {id}";
@@ -151,7 +151,7 @@ public static class HabitDatabase
 
         string returnString = "";
 
-        using SqliteConnection connection = new SqliteConnection(_connectionString);
+        using SqliteConnection connection = new SqliteConnection(ConnectionString);
         connection.Open();
 
         string readTableName = $"SELECT Name FROM habits WHERE ID = '{tableId}'";
@@ -175,7 +175,7 @@ public static class HabitDatabase
     {
         SQLitePCL.Batteries.Init();
 
-        using SqliteConnection connection = new SqliteConnection(_connectionString);
+        using SqliteConnection connection = new SqliteConnection(ConnectionString);
         connection.Open();
 
         int columnCount;
@@ -235,7 +235,7 @@ public static class HabitDatabase
     {
         SQLitePCL.Batteries.Init();
 
-        using SqliteConnection connection = new SqliteConnection(_connectionString);
+        using SqliteConnection connection = new SqliteConnection(ConnectionString);
         connection.Open();
 
         long rowsCount = 0;
