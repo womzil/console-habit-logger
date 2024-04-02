@@ -1,5 +1,4 @@
-﻿
-using Microsoft.Extensions.Configuration;
+﻿using Microsoft.Extensions.Configuration;
 
 namespace ConsoleHabitLogger;
 
@@ -16,7 +15,6 @@ public class Program
         if (string.IsNullOrEmpty(Config["database:connection_string"]))
             throw new InvalidDataException("Connection type cannot be empty. Please, check the application config.");
 
-        while (true)
-            Menu.MainMenu();
+        Menu.Main.Open();
     }
 }
