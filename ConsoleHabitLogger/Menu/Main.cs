@@ -31,6 +31,7 @@ internal static class Main
             switch (option)
             {
                 case "Editor":
+                    Editor.Open();
                     break;
 
                 case "Create sample data":
@@ -43,7 +44,7 @@ internal static class Main
                 case "Exit":
                     if (AnsiConsole.Confirm("Are you sure you want to leave?"))
                     {
-                        AnsiConsole.MarkupLine("Leaving...");
+                        AnsiConsole.WriteLine("Leaving...");
                         return;
                     }
 

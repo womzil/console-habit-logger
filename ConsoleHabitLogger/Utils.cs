@@ -1,4 +1,4 @@
-using Spectre.Console;
+using System.Drawing;
 
 namespace ConsoleHabitLogger;
 
@@ -17,13 +17,11 @@ static class Utils
         }
     }
 
-    public static bool PressAnyKeyToContinue()
+    public static Spectre.Console.Color GetRandomColor()
     {
-        if (AnsiConsole.Confirm("Are you sure you want to leave?"))
-        {
-            AnsiConsole.MarkupLine("Leaving...");
-            return true;
-        }
-        return false;
+        byte[] randomBytes = new byte[3];
+        Random random = new Random();
+        random.NextBytes(randomBytes);
+        return new Spectre.Console.Color(randomBytes[0], randomBytes[1], randomBytes[2]);
     }
 }

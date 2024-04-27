@@ -160,7 +160,7 @@ public static class Sqlite
         {
             using (SqliteDataReader reader = command.ExecuteReader())
             {
-                if (reader.Read()) // Check if there are rows returned
+                if (reader.Read())
                 {
                     returnString = reader.GetString(0);
                 }
