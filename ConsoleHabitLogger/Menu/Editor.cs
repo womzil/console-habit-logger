@@ -1,4 +1,5 @@
-﻿using Spectre.Console;
+﻿using System.Security.AccessControl;
+using Spectre.Console;
 
 namespace ConsoleHabitLogger.Menu;
 
@@ -37,6 +38,13 @@ public class Editor
             .AddItem("Ruby", 16, Utils.GetRandomColor())
             .AddItem("Shell", 12.1, Utils.GetRandomColor()));
         
-        AnsiConsole.Console.Input.ReadKey(false);
+        ConsoleKey key = AnsiConsole.Console.Input.ReadKey(true).Value.Key;
+
+        switch (key)
+        {
+            case ConsoleKey.A:
+            case ConsoleKey.Add:
+                break;
+        }
     }
 }

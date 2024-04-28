@@ -1,53 +1,42 @@
-﻿/*
- *
- * All functions used to operate on the database are here.
- *
- * The database is stored in "habit-logger.sqlite" file by default.
- *
- * Every habit has its own table in it.
- *
- */
-
-using Microsoft.Data.Sqlite;
+﻿using Microsoft.Data.Sqlite;
 
 namespace ConsoleHabitLogger.Database.AccessType;
 
 public static class Sqlite
 {
-    static readonly string ConnectionString = Program.Config["database:connection_string"];
-
-    public static void CreateHabit(string tableName, string unit)
+    private static void ExecuteQueries(string[] queries)
     {
         SQLitePCL.Batteries.Init();
 
-        using SqliteConnection connection = new SqliteConnection(ConnectionString);
+        using SqliteConnection connection = new SqliteConnection(Operations.ConnectionString);
         connection.Open();
 
-        // CreateHabit table of habits
-        List<string> queries = ["CREATE TABLE IF NOT EXISTS habits (ID INTEGER PRIMARY KEY, Name TEXT, Unit TEXT)"];
-
-        queries.Add($"INSERT INTO habits (Name, Unit) SELECT '{tableName}', '{unit}' WHERE NOT EXISTS (SELECT 1 FROM sqlite_master WHERE type='table' AND name='{tableName}')");
-
-        // CreateHabit habit table
-        queries.Add($"CREATE TABLE IF NOT EXISTS '{tableName}' (ID INTEGER PRIMARY KEY, Amount REAL, Time TEXT)");
-
-        for (int i = 0; i < queries.Count; i++)
+        foreach (string query in queries)
         {
-            using (SqliteCommand command = new SqliteCommand(queries[i], connection))
+            using (SqliteCommand command = new SqliteCommand(query, connection))
             {
                 command.ExecuteNonQuery();
-                Console.WriteLine(i == 0 ? "Table of habits created successfully." : $"Habit table '{tableName}' created successfully.");
             }
         }
 
         connection.Close();
     }
 
+    public static void CreateHabit(string name, string unit)
+    {
+        ExecuteQueries([
+            // Create habits table if it doesn't exist
+            "CREATE TABLE IF NOT EXISTS habits (id INTEGER PRIMARY KEY, name TEXT, unit TEXT)",
+            // Add new habit
+            $"INSERT INTO habits (name, unit) SELECT '{name}', '{unit}'"
+        ]);
+    }
+
     public static void Edit(int id, string newTableName, string unit)
     {
         SQLitePCL.Batteries.Init();
 
-        using SqliteConnection connection = new SqliteConnection(ConnectionString);
+        using SqliteConnection connection = new SqliteConnection(Operations.ConnectionString);
         connection.Open();
 
         List<string> queries = [];
@@ -60,7 +49,9 @@ public static class Sqlite
             using (SqliteCommand command = new SqliteCommand(queries[i], connection))
             {
                 command.ExecuteNonQuery();
-                Console.WriteLine(i == 0 ? "Table of habits edited successfully." : $"Habit table \"{newTableName}\" with unit \"{unit}\" edited successfully.");
+                Console.WriteLine(i == 0
+                    ? "Table of habits edited successfully."
+                    : $"Habit table \"{newTableName}\" with unit \"{unit}\" edited successfully.");
             }
         }
 
@@ -71,7 +62,7 @@ public static class Sqlite
     {
         SQLitePCL.Batteries.Init();
 
-        using SqliteConnection connection = new SqliteConnection(ConnectionString);
+        using SqliteConnection connection = new SqliteConnection(Operations.ConnectionString);
         connection.Open();
 
         string removeTable = $"DROP TABLE '{tableName}'";
@@ -95,7 +86,7 @@ public static class Sqlite
     {
         SQLitePCL.Batteries.Init();
 
-        using SqliteConnection connection = new SqliteConnection(ConnectionString);
+        using SqliteConnection connection = new SqliteConnection(Operations.ConnectionString);
         connection.Open();
 
         string removeFromHabitList = $"DELETE FROM '{tableName}' WHERE ID='{id}'";
@@ -109,29 +100,21 @@ public static class Sqlite
         connection.Close();
     }
 
-    public static void CreateRecord(string name, double amount)
+    public static void CreateRecord(int habitId, string amount, string description)
     {
-        SQLitePCL.Batteries.Init();
-
-        using SqliteConnection connection = new SqliteConnection(ConnectionString);
-        connection.Open();
-
-        string query = $"INSERT INTO '{name}' (Amount, Time) VALUES ('{amount}', datetime())";
-
-        using (SqliteCommand command = new SqliteCommand(query, connection))
-        {
-            command.ExecuteNonQuery();
-            Console.WriteLine($"Added new entry with value of '{amount}' to the habit '{name}' successfully.");
-        }
-
-        connection.Close();
+        ExecuteQueries([
+            // Create a table for activity records if it doesn't exist
+            "CREATE TABLE IF NOT EXISTS activity_records (id INTEGER PRIMARY KEY, habit_id INTEGER, amount TEXT, description TEXT, time_created TEXT)",
+            // Add new record
+            $"INSERT INTO activity_records (habit_id, amount, description, time_created) VALUES ({habitId}, '{amount}', '{description}', datetime())"
+        ]);
     }
 
     public static void EditRecord(int id, string tableName, double amount)
     {
         SQLitePCL.Batteries.Init();
 
-        using SqliteConnection connection = new SqliteConnection(ConnectionString);
+        using SqliteConnection connection = new SqliteConnection(Operations.ConnectionString);
         connection.Open();
 
         string query = $"UPDATE {tableName} SET Amount = '{amount}' WHERE ID = {id}";
@@ -151,7 +134,7 @@ public static class Sqlite
 
         string returnString = "";
 
-        using SqliteConnection connection = new SqliteConnection(ConnectionString);
+        using SqliteConnection connection = new SqliteConnection(Operations.ConnectionString);
         connection.Open();
 
         string readTableName = $"SELECT Name FROM habits WHERE ID = '{tableId}'";
@@ -175,14 +158,15 @@ public static class Sqlite
     {
         SQLitePCL.Batteries.Init();
 
-        using SqliteConnection connection = new SqliteConnection(ConnectionString);
+        using SqliteConnection connection = new SqliteConnection(Operations.ConnectionString);
         connection.Open();
 
         int columnCount;
         List<int> ids = new List<int>();
         int maxNumberOfLinesOnScreen = Console.WindowHeight - 5;
 
-        string query = $"SELECT * FROM '{tableName}' LIMIT {maxNumberOfLinesOnScreen} OFFSET {maxNumberOfLinesOnScreen * (page - 1)}";
+        string query =
+            $"SELECT * FROM '{tableName}' LIMIT {maxNumberOfLinesOnScreen} OFFSET {maxNumberOfLinesOnScreen * (page - 1)}";
         string columnQuery = $"PRAGMA table_info('{tableName}')";
 
         using (SqliteCommand schemaCommand = new SqliteCommand(columnQuery, connection))
@@ -216,6 +200,7 @@ public static class Sqlite
                             if (i + 1 != columnCount)
                                 Console.Write(" | ");
                         }
+
                         Console.WriteLine();
                     }
                 }
@@ -235,7 +220,7 @@ public static class Sqlite
     {
         SQLitePCL.Batteries.Init();
 
-        using SqliteConnection connection = new SqliteConnection(ConnectionString);
+        using SqliteConnection connection = new SqliteConnection(Operations.ConnectionString);
         connection.Open();
 
         long rowsCount = 0;
@@ -251,17 +236,5 @@ public static class Sqlite
 
         connection.Close();
         return rowsCount;
-    }
-
-    // Just for testing purposes
-    public static void CreateSampleData()
-    {
-        CreateHabit("Water drunk", "litres (l)");
-        for (int i = 0; i < 1000; i++)
-        {
-            double randomNumber = new Random().NextDouble() * 5;
-            Console.Write($"{i + 1}. ");
-            CreateRecord("Water drunk", randomNumber);
-        }
     }
 }

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="habit-logger.sqlite" uuid="7e72b45e-1a7b-4a41-a3d0-94f99b0b351b">
+    <data-source source="LOCAL" name="habit-logger.sqlite" uuid="e5f3ee37-5ec6-4dda-980d-d689ff0088c2">
       <driver-ref>sqlite.xerial</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>org.sqlite.JDBC</jdbc-driver>

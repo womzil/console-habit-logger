@@ -15,6 +15,14 @@ public class Program
         if (string.IsNullOrEmpty(Config["database:connection_string"]))
             throw new InvalidDataException("Connection type cannot be empty. Please, check the application config.");
 
-        Menu.Main.Open();
+        try
+        {
+            Menu.Main.Open();
+        }
+        catch (Exception error)
+        {
+            Console.WriteLine(error);
+            Console.ReadKey();
+        }
     }
 }
