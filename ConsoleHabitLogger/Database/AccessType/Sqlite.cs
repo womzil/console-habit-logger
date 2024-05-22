@@ -1,4 +1,5 @@
-﻿using Microsoft.Data.Sqlite;
+﻿using System.Runtime.ExceptionServices;
+using Microsoft.Data.Sqlite;
 
 namespace ConsoleHabitLogger.Database.AccessType;
 
@@ -22,6 +23,38 @@ public static class Sqlite
         connection.Close();
     }
 
+    private static List<List<string>> ExecuteQueriesWithReturn(string[] queries)
+    {
+        SQLitePCL.Batteries.Init();
+
+        using SqliteConnection connection = new SqliteConnection(Operations.ConnectionString);
+        connection.Open();
+
+        List<List<string>> rows = [];
+
+        foreach (string query in queries)
+        {
+            using (SqliteDataReader reader = new SqliteCommand(query, connection).ExecuteReader())
+            {
+                if (reader.Read())
+                {
+                    List<string> row = [];
+
+                    for (int i = 0; i < 4; i++)
+                    {
+                        row[i] = reader.GetString(i);
+                    }
+
+                    rows.Add(row);
+                }
+            }
+        }
+
+        connection.Close();
+
+        return rows;
+    }
+
     public static void CreateHabit(string name, string unit)
     {
         ExecuteQueries([
@@ -29,6 +62,23 @@ public static class Sqlite
             "CREATE TABLE IF NOT EXISTS habits (id INTEGER PRIMARY KEY, name TEXT, unit TEXT)",
             // Add new habit
             $"INSERT INTO habits (name, unit) SELECT '{name}', '{unit}'"
+        ]);
+    }
+
+    public static void CreateRecord(int habitId, string amount, string description)
+    {
+        ExecuteQueries([
+            // Create a table for activity records if it doesn't exist
+            "CREATE TABLE IF NOT EXISTS activity_records (id INTEGER PRIMARY KEY, habit_id INTEGER, amount TEXT, description TEXT, time_created TEXT)",
+            // Add new record
+            $"INSERT INTO activity_records (habit_id, amount, description, time_created) VALUES ({habitId}, '{amount}', '{description}', datetime())"
+        ]);
+    }
+
+    public static List<List<string>> ReadHabits(int numberOfHabits, int startIndex)
+    {
+        return ExecuteQueriesWithReturn([
+            $"SELECT * FROM habits LIMIT {numberOfHabits} OFFSET {startIndex}"
         ]);
     }
 
@@ -98,16 +148,6 @@ public static class Sqlite
 
         Console.WriteLine($"Removed record with ID {id} from habit {tableName}.");
         connection.Close();
-    }
-
-    public static void CreateRecord(int habitId, string amount, string description)
-    {
-        ExecuteQueries([
-            // Create a table for activity records if it doesn't exist
-            "CREATE TABLE IF NOT EXISTS activity_records (id INTEGER PRIMARY KEY, habit_id INTEGER, amount TEXT, description TEXT, time_created TEXT)",
-            // Add new record
-            $"INSERT INTO activity_records (habit_id, amount, description, time_created) VALUES ({habitId}, '{amount}', '{description}', datetime())"
-        ]);
     }
 
     public static void EditRecord(int id, string tableName, double amount)

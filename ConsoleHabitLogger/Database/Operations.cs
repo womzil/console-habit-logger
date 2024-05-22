@@ -17,6 +17,14 @@ public class Operations
             AccessType.Sqlite.CreateRecord(habitId, amount, description);
     }
 
+    public static List<List<string>> ReadHabits(int numberOfHabits, int startIndex)
+    {
+        if (TypeOfAccess.ToLower() == "sqlite")
+            return AccessType.Sqlite.ReadHabits(numberOfHabits, startIndex);
+        else
+            return [];
+    }
+
     public static void GenerateSampleData()
     {
         Random random = new Random();

@@ -17,7 +17,15 @@ public class Editor
         tableOfHabits.AddColumn(new TableColumn("Measure unit").Centered());
         tableOfHabits.AddColumn(new TableColumn("Number of entries").Centered());
 
-        tableOfHabits.AddRow("2", "Water drunk", "litres (l)", "500");
+        List<List<string>> rows = [
+            ["2", "Water drunk", "litres (l)", "500"],
+            ["3", "Minecraft played", "time", "10"]
+        ];
+
+        foreach (List<string> row in Database.Operations.ReadHabits(0, 10))
+        {
+            tableOfHabits.AddRow(row.ToArray());
+        }
         
         AnsiConsole.Write(tableOfHabits);
         
