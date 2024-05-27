@@ -8,13 +8,15 @@ public class Validation
     {
         string habitOrActivity = habit ? "habit" : "activity";
 
-        int habitId = int.Parse(AnsiConsole.Ask<string>($"Please, enter {habitOrActivity}'s ID: "));
-        do
+        int id = 0;
+        string input = AnsiConsole.Ask<string>($"Please, enter {habitOrActivity}'s ID: ");
+
+        while (!int.TryParse(input, out id) || habit ? !Database.Operations.HabitExists(id) : !Database.Operations.ActivityExists(id))
         {
             AnsiConsole.MarkupLine("[red]Wrong ID![/]");
-            habitId = int.Parse(AnsiConsole.Ask<string>($"Please, enter {habitOrActivity}'s ID: "));
-        } while (Database.Operations.HabitExists(habitId));
+            input = AnsiConsole.Ask<string>($"Please, enter {habitOrActivity}'s ID: ");
+        }
 
-        return habitId;
+        return id;
     }
 }

@@ -22,4 +22,13 @@ static class Utils
         random.NextBytes(randomBytes);
         return new Spectre.Console.Color(randomBytes[0], randomBytes[1], randomBytes[2]);
     }
+
+    public static int NumberOfPages(int habitId)
+    {
+        int numberOfPages = (int)Math.Ceiling(double.Parse(Database.Operations.GetAmountOfRows(habitId)) / 10);
+
+        if (numberOfPages <= 0) numberOfPages = 1;
+
+        return numberOfPages;
+    }
 }

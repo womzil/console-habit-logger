@@ -22,7 +22,7 @@ public static class Sqlite
         connection.Close();
     }
 
-    public static List<List<string>> ExecuteQueriesWithReturn(string[] queries, int numberOfColumns = 3)
+    public static List<List<string>> ExecuteQueriesWithReturn(string[] queries, int numberOfColumns)
     {
         SQLitePCL.Batteries.Init();
 

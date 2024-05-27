@@ -8,17 +8,7 @@ internal class SampleData
     {
         if (AnsiConsole.Confirm("Are you sure you want to create sample data? It can be removed later manually."))
         {
-            AnsiConsole.Progress()
-                .Start(ctx => 
-                {
-                    ProgressTask task = ctx.AddTask("[green]Generating sample data...[/]");
-                    Database.Operations.GenerateSampleData();
-                    
-                    while(!ctx.IsFinished)
-                    {
-                        task.Increment(1.5);
-                    }
-                });
+            Database.Operations.GenerateSampleData();
 
             AnsiConsole.WriteLine("Done! Press any key to return.");
             Console.ReadKey();

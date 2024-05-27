@@ -1,4 +1,6 @@
-﻿namespace ConsoleHabitLogger.Database;
+﻿using Spectre.Console;
+
+namespace ConsoleHabitLogger.Database;
 
 public class Operations
 {
@@ -37,7 +39,7 @@ public class Operations
     public static void RemoveActivity(int id)
     {
         if (TypeOfAccess.ToLower() == "sqlite")
-            AccessType.Sqlite.ExecuteQueries([$"DELETE FROM habits WHERE id = {id}"]);
+            AccessType.Sqlite.ExecuteQueries([$"DELETE FROM activity_records WHERE id = {id}"]);
     }
 
     public static List<List<string>> ReadHabits(int numberOfHabits, int startIndex)
@@ -45,27 +47,46 @@ public class Operations
         if (TypeOfAccess.ToLower() == "sqlite")
             return AccessType.Sqlite.ExecuteQueriesWithReturn([
                 $"SELECT * FROM habits LIMIT {numberOfHabits} OFFSET {startIndex}"
-            ]);
+            ], 3);
         else
             return [];
     }
 
-    public static List<List<string>> ReadActivities(int numberOfHabits, int startIndex)
+    public static List<List<string>> ReadActivities(int habitId, int numberOfActivities, int startIndex)
     {
         if (TypeOfAccess.ToLower() == "sqlite")
             return AccessType.Sqlite.ExecuteQueriesWithReturn([
-                $"SELECT * FROM activity_records LIMIT {numberOfHabits} OFFSET {startIndex}"
-            ]);
+                $"SELECT id, amount, description, time_created FROM activity_records WHERE habit_id IS {habitId} LIMIT {numberOfActivities} OFFSET {startIndex}"
+            ], 4);
         else
             return [];
     }
 
-    public static string GetAmountOfRows(int habitId)
+    public static string GetHabitName(int id)
     {
         if (TypeOfAccess.ToLower() == "sqlite")
             return AccessType.Sqlite.ExecuteQueriesWithReturn([
-                $"SELECT COUNT(id) FROM activity_records WHERE habit_id IS {habitId}"
+                $"SELECT name FROM habits WHERE id IS {id}"
             ], 1)[0][0];
+        else
+            return "0";
+    }
+
+    public static string GetAmountOfRows(int habitId = -1)
+    {
+        if (TypeOfAccess.ToLower() == "sqlite")
+            if (habitId >= 0)
+            {
+                return AccessType.Sqlite.ExecuteQueriesWithReturn([
+                    $"SELECT COUNT(id) FROM activity_records WHERE habit_id IS {habitId}"
+                ], 1)[0][0];
+            }
+            else
+            {
+                return AccessType.Sqlite.ExecuteQueriesWithReturn([
+                    $"SELECT COUNT(id) FROM habits"
+                ], 1)[0][0];
+            }
         else
             return "0";
     }
@@ -76,7 +97,7 @@ public class Operations
         {
             List<List<string>> returns = AccessType.Sqlite.ExecuteQueriesWithReturn([$"SELECT id FROM habits WHERE id IS {id}"], 1);
 
-            return returns.Count == 0;
+            return returns.Count == 1;
         }
         else
             return false;
@@ -88,7 +109,19 @@ public class Operations
         {
             List<List<string>> returns = AccessType.Sqlite.ExecuteQueriesWithReturn([$"SELECT id FROM activity_records WHERE id IS {id}"], 1);
 
-            return returns.Count == 0;
+            return returns.Count == 1;
+        }
+        else
+            return false;
+    }
+
+    public static bool UsesTimeSelector(int id)
+    {
+        if (TypeOfAccess.ToLower() == "sqlite")
+        {
+            List<List<string>> returns = AccessType.Sqlite.ExecuteQueriesWithReturn([$"SELECT unit FROM habits WHERE id IS {id}"], 1);
+
+            return returns[0][0] == "time";
         }
         else
             return false;
@@ -99,10 +132,24 @@ public class Operations
         Random random = new Random();
         string habitName = $"Cycling #{random.Next()}";
         CreateHabit(habitName, "kilometers");
+        int habitId = int.Parse(AccessType.Sqlite.ExecuteQueriesWithReturn([$"SELECT id FROM habits WHERE name IS '{habitName}'"], 1)[0][0]);
 
-        for (int i = 0; i <= 1000; i++)
-        {
-            CreateActivity(1, "15.5", $"Description #{i}");
-        }
+        AnsiConsole.Progress()
+            .Start(ctx => 
+            {
+                ProgressTask task = ctx.AddTask("[green]Generating sample data...[/]");
+
+                for (int i = 1; i <= 1000; i++)
+                {
+                    task.Increment(0.1);
+                    CreateActivity(habitId, random.Next(2, 200).ToString(), $"Description #{i}");
+                }
+
+                if (!ctx.IsFinished)
+                {
+                    task.Increment(100);
+                }
+            });
+
     }
 }

@@ -31,7 +31,7 @@ internal static class Main
             switch (option)
             {
                 case "Editor":
-                    Editor.Open();
+                    Editor.OpenHabitEditor();
                     break;
 
                 case "Create sample data":
