@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using ConsoleHabitLogger.Database;
 using Spectre.Console;
 
 namespace ConsoleHabitLogger.Menu;
@@ -46,7 +47,11 @@ public class Editor
                     OpenActivityEditor(idToEnter);
                     break;
                 case ConsoleKey.E:
-                    Validation.SelectId(true);
+                    int idToEdit = Validation.SelectId(true);
+                    string editName = AnsiConsole.Ask<string>("How do you want to name your [green]habit[/]?");
+                    string editUnit = AnsiConsole.Ask<string>("What [green]unit[/] do you want to use for it?").ToLower();
+                    
+                    Operations.EditHabit(idToEdit, editName, editUnit);
                     break;
                 case ConsoleKey.R:
                 case ConsoleKey.Delete:
@@ -109,13 +114,39 @@ public class Editor
                     }
                     else
                     {
-                        TimeSelector(habitId, description);
+                        TimeSpan duration = TimeSelector(habitId);
+                        Database.Operations.CreateActivity(habitId, duration.ToString(), description);
+                        AnsiConsole.WriteLine($"Successfully created an activity with description \"{description}\" and with timespan of \"{duration}\".");
                     }
 
                     Console.ReadKey();
                     break;
                 case ConsoleKey.E:
-                    Validation.SelectId(true);
+                    int idToEdit = Validation.SelectId(true);
+                    string editDescription = AnsiConsole.Ask<string>("How do you want to describe your [green]activity[/]?");
+                    
+                    if (!useTimeSelector)
+                    {
+                        string amountString = AnsiConsole.Ask<string>("What's the [green]amount[/]?").ToLower();
+                        double amount = 0;
+
+                        while (!double.TryParse(amountString, out amount))
+                        {
+                            AnsiConsole.MarkupLine("[red]It has to be a number![/]");
+                            amountString = AnsiConsole.Ask<string>("What's the [green]amount[/]?").ToLower();
+                        }
+
+                        Database.Operations.EditActivity(idToEdit, amount.ToString(CultureInfo.CurrentCulture), editDescription);
+                        AnsiConsole.WriteLine($"Successfully edited an activity with description \"{editDescription}\" and with amount of \"{amount}\".");
+                    }
+                    else
+                    {
+                        TimeSpan editDuration = TimeSelector(idToEdit);
+                        Database.Operations.EditActivity(idToEdit, editDuration.ToString(), editDescription);
+                        AnsiConsole.WriteLine(
+                            $"Successfully edited an activity with description \"{editDescription}\" and with timespan of \"{editDuration}\".");
+                    }
+
                     break;
                 case ConsoleKey.R:
                 case ConsoleKey.Delete:
@@ -229,7 +260,7 @@ public class Editor
         }
     }
 
-    private static void TimeSelector(int habitId, string description)
+    private static TimeSpan TimeSelector(int habitId)
     {
         AnsiConsole.MarkupLine($"Date/time format you should use: [green]{DateTime.Now}[/]");
 
@@ -263,7 +294,6 @@ public class Editor
             }
         } while (duration <= TimeSpan.Zero);
 
-        Database.Operations.CreateActivity(habitId, duration.ToString(), description);
-        AnsiConsole.WriteLine($"Successfully created an activity with description \"{description}\" and with amount of \"{duration}\".");
+        return duration;
     }
 }

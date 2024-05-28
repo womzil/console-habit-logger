@@ -41,6 +41,22 @@ public class Operations
         if (TypeOfAccess.ToLower() == "sqlite")
             AccessType.Sqlite.ExecuteQueries([$"DELETE FROM activity_records WHERE id = {id}"]);
     }
+    
+    public static void EditHabit(int id, string name, string unit)
+    {
+        if (TypeOfAccess.ToLower() == "sqlite")
+            AccessType.Sqlite.ExecuteQueries([
+                $"UPDATE habits SET name = '{name}', unit = '{unit}' WHERE id = {id}"
+            ]);
+    }
+
+    public static void EditActivity(int id, string amount, string description = "")
+    {
+        if (TypeOfAccess.ToLower() == "sqlite")
+            AccessType.Sqlite.ExecuteQueries([
+                $"UPDATE activity_records SET amount = '{amount}', description = '{description}' WHERE id = {id}"
+            ]);
+    }
 
     public static List<List<string>> ReadHabits(int numberOfHabits, int startIndex)
     {
