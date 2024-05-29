@@ -39,6 +39,7 @@ internal static class Main
                     break;
 
                 case "Settings":
+                    Settings.Open();
                     break;
 
                 case "Exit":
