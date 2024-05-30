@@ -85,6 +85,7 @@ public class Settings
                         AnsiConsole.WriteLine("Leaving...");
                         Program.Config["locale:language"] = language;
                         Program.Config["database:type"] = databaseEngine;
+                        Program.SaveConfiguration();
                         Localization.Initiate();
                         return;
                     }
