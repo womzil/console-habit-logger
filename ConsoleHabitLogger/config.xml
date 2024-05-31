@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8" ?> 
+<configuration>
+  <database>
+    <type>SQLite</type>
+    <connection_string>Data Source=habit-logger.sqlite;</connection_string>
+  </database>
+  <locale>
+    <language>en</language>
+  </locale>
+</configuration>

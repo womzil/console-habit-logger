@@ -1,0 +1,87 @@
+# Menú principal
+
+welcome_message: Bienvenido(a) al registrador de hábitos creado por womzil.
+warning_vscode: Por favor, nota que el terminal de depuración no es soportado.
+program_features: Puedes usar este programa para registrar cualquier hábito/actividad de tu elección.
+selection: Por favor, elige lo que quieres hacer de la lista a continuación.
+more_options: Mueve hacia arriba y hacia abajo para revelar más opciones
+
+editor: Editor
+sample_data: Crear datos de muestra
+settings: Configuraciones
+exit: Salir
+exit_confirmation: ¿Estás seguro(a) de que quieres salir?
+leaving: Saliendo...
+
+# Editor
+habit_name: ¿Cómo quieres nombrar tu [green]hábito[/]?
+habit_unit: ¿Qué [green]unidad[/] quieres usar para él?
+
+# Variables usadas para detectar unidades de tiempo, deben estar en minúsculas
+time: tiempo
+second: segundo
+minute: minuto
+hour: hora
+day: día
+week: semana
+month: mes
+year: año
+
+time_selector: ¿Quieres usar el selector de tiempo?
+habit_created: Hábito creado exitosamente con el nombre "{0}" y la unidad "{1}".
+habit_remove: ¿Estás seguro(a) de que quieres eliminar el hábito con id "{0}"?
+
+activity_description: ¿Cómo quieres describir tu [green]actividad[/]?
+activity_amount: ¿Cuál es la [green]cantidad[/]?
+number_required: "[red]¡Debe ser un número![/]"
+activity_created: Actividad creada exitosamente con la descripción "{0}" y con la cantidad de "{1}".
+activity_created_time: Actividad creada exitosamente con la descripción "{0}" y con el tiempo de "{1}".
+activity_edited: Actividad editada exitosamente con la descripción "{0}" y con la cantidad de "{1}".
+activity_edited_time: Actividad editada exitosamente con la descripción "{0}" y con el tiempo de "{1}".
+activity_remove_confirm: ¿Estás seguro(a) de que quieres eliminar la actividad con id "{0}"?
+
+habits: Hábitos, {0}/{1}
+activities: Actividades de {0}, {1}/{2}
+id: ID
+name: Nombre
+description: Descripción
+unit: Unidad de medida
+amount: Cantidad
+entries: Número de entradas
+time_created: Tiempo de creación
+
+controls: "Controles:"
+change_page: Flecha Izquierda/Derecha - cambiar página
+see_habit: Enter - Ver registros de un hábito
+edit_habit: E - Editar un hábito
+add_habit: A - Agregar un nuevo hábito
+remove_habit: R - Eliminar hábito
+edit_activity: E - Editar una actividad
+add_activity: A - Agregar una nueva actividad
+remove_activity: R - Eliminar actividad
+
+date_format: "Formato de fecha/hora que debes usar: [green]{0}[/]"
+start_time: ¿Cuál es el [green]tiempo/fecha de inicio[/]?
+end_time: ¿Cuál es el [green]tiempo/fecha de finalización[/]?
+invalid_date: "[red]¡Debe ser una fecha válida![/]"
+time_less_than_zero: "[red]El tiempo dedicado a una actividad no puede ser igual o menor a 0![/]"
+
+# Generar datos de muestra
+generate_confirm: ¿Estás seguro(a) de que quieres crear datos de muestra? Se pueden eliminar manualmente más tarde.
+generating_sample_data: "[green]Generando datos de muestra...[/]"
+generation_done: ¡Hecho! Presiona cualquier tecla para volver.
+
+# Validación
+enter_id: "Por favor, ingresa el ID de {0}: "
+wrong_id: "[red]¡ID incorrecto![/]"
+# Estos deben estar en minúsculas
+habit: hábito
+activity: actividad
+
+# Configuraciones
+database_type: Motor de base de datos
+language: Idioma
+english: Inglés
+polish: Polaco
+spanish: Español
+save_settings_confirm: ¿Estás seguro(a) de que quieres guardar los cambios y salir?

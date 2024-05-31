@@ -1,0 +1,87 @@
+# Menu główne
+
+welcome_message: Witaj w programie do zapisywania nawyków stworzonym przez womzila.
+warning_vscode: Uwaga, konsola debugowania w VS Code nie jest wspierana.
+program_features: Możesz użyć tego programu do rejestrowania dowolnego nawyku/aktywności.
+selection: Proszę, wybierz, co chcesz zrobić z listy poniżej.
+more_options: Przesuń w górę i w dół, aby zobaczyć więcej opcji
+
+editor: Edytor
+sample_data: Utwórz przykładowe dane
+settings: Ustawienia
+exit: Wyjście
+exit_confirmation: Czy na pewno chcesz opuścić?
+leaving: Wychodzenie...
+
+# Edytor
+habit_name: Jak chcesz nazwać swój [green]nawyk[/]?
+habit_unit: Jakiej [green]jednostki[/] chcesz używać?
+
+# Zmienne używane do wykrywania jednostek czasu, powinny być zapisane małymi literami!
+time: czas
+second: sekunda
+minute: minuta
+hour: godzina
+day: dzień
+week: tydzień
+month: miesiąc
+year: rok
+
+time_selector: Czy chcesz użyć selektora czasu?
+habit_created: Pomyślnie utworzono nawyk o nazwie "{0}" i jednostce "{1}".
+habit_remove: Czy na pewno chcesz usunąć nawyk z id "{0}"?
+
+activity_description: Jak chcesz opisać swoją [green]aktywność[/]?
+activity_amount: Jaka jest [green]ilość[/]?
+number_required: "[red]To musi być liczba![/]"
+activity_created: Pomyślnie utworzono aktywność z opisem "{0}" i ilością "{1}".
+activity_created_time: Pomyślnie utworzono aktywność z opisem "{0}" i czasem trwania "{1}".
+activity_edited: Pomyślnie edytowano aktywność z opisem "{0}" i ilością "{1}".
+activity_edited_time: Pomyślnie edytowano aktywność z opisem "{0}" i czasem trwania "{1}".
+activity_remove_confirm: Czy na pewno chcesz usunąć aktywność z id "{0}"?
+
+habits: Nawyki, {0}/{1}
+activities: Aktywności {0}, {1}/{2}
+id: ID
+name: Nazwa
+description: Opis
+unit: Jednostka miary
+amount: Ilość
+entries: Liczba wpisów
+time_created: Czas utworzenia
+
+controls: "Sterowanie:"
+change_page: Strzałka w lewo/prawo - zmiana strony
+see_habit: Enter - Zobacz wpisy nawyku
+edit_habit: E - Edytuj nawyk
+add_habit: A - Dodaj nowy nawyk
+remove_habit: R - Usuń nawyk
+edit_activity: E - Edytuj aktywność
+add_activity: A - Dodaj nową aktywność
+remove_activity: R - Usuń aktywność
+
+date_format: "Format daty/czasu, którego powinieneś używać: [green]{0}[/]"
+start_time: Jaki jest [green]czas/data rozpoczęcia[/]?
+end_time: Jaki jest [green]czas/data zakończenia[/]?
+invalid_date: "[red]To musi być prawidłowa data![/]"
+time_less_than_zero: "[red]Czas spędzony na aktywności nie może być równy lub mniejszy niż 0![/]"
+
+# Generowanie przykładowych danych
+generate_confirm: Czy na pewno chcesz utworzyć przykładowe dane? Można je później ręcznie usunąć.
+generating_sample_data: "[green]Generowanie przykładowych danych...[/]"
+generation_done: Gotowe! Naciśnij dowolny klawisz, aby powrócić.
+
+# Walidacja
+enter_id: "Proszę, wprowadź ID {0}: "
+wrong_id: "[red]Błędne ID![/]"
+# Te zmienne powinny być zapisane małymi literami
+habit: nawyk
+activity: aktywność
+
+# Ustawienia
+database_type: Silnik bazy danych
+language: Język
+english: Angielski
+polish: Polski
+spanish: Hiszpański
+save_settings_confirm: Czy na pewno chcesz zapisać zmiany i wyjść?

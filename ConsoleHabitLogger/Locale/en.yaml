@@ -1,0 +1,87 @@
+# Main menu
+
+welcome_message: Welcome to the habit logger created by womzil.
+warning_vscode: Please, note that VS Code debug terminal is not supported.
+program_features: You can use this program to log any habit/activity of choice.
+selection: Please, choose what you want to do from the list below.
+more_options: Move up and down to reveal more options
+
+editor: Editor
+sample_data: Create sample data
+settings: Settings
+exit: Exit
+exit_confirmation: Are you sure you want to leave?
+leaving: Leaving...
+
+# Editor
+habit_name: How do you want to name your [green]habit[/]?
+habit_unit: What [green]unit[/] do you want to use for it?
+
+# Variables used to detect time units, should be lowercase!
+time: time
+second: second
+minute: minute
+hour: hour
+day: day
+week: week
+month: month
+year: year
+
+time_selector: Do you want to use time selector?
+habit_created: Successfully created a habit with name "{0}" and unit "{1}".
+habit_remove: Are you sure you want to remove habit with id "{0}"?
+
+activity_description: How do you want to describe your [green]activity[/]?
+activity_amount: What's the [green]amount[/]?
+number_required: "[red]It has to be a number![/]"
+activity_created: Successfully created an activity with description "{0}" and with amount of "{1}".
+activity_created_time: Successfully created an activity with description "{0}" and with timespan of "{1}".
+activity_edited: Successfully created an activity with description "{0}" and with amount of "{1}".
+activity_edited_time: Successfully created an activity with description "{0}" and with timespan of "{1}".
+activity_remove_confirm: Are you sure you want to remove activity with id "{0}"?"
+
+habits: Habits, {0}/{1}
+activities: Activities of {0}, {1}/{2}
+id: ID
+name: Name
+description: Description
+unit: Measure unit
+amount: Amount
+entries: Number of entries
+time_created: Time created
+
+controls: "Controls:"
+change_page: Left/Right arrow - change page
+see_habit: Enter - See records of a habit
+edit_habit: E - Edit a habit
+add_habit: A - Add a new habit
+remove_habit: R - Remove habit
+edit_activity: E - Edit an activity
+add_activity: A - Add a new activity
+remove_activity: R - Remove activity
+  
+date_format: "Date/time format you should use: [green]{0}[/]"
+start_time: What's the [green]start time/date[/]?
+end_time: What's the [green]end time/date[/]?
+invalid_date: "[red]It has to be a valid date![/]"
+time_less_than_zero: "[red]Time spent on an activity can't be equal or lower than 0![/]"
+
+# Generate sample data
+generate_confirm: Are you sure you want to create sample data? It can be removed later manually.
+generating_sample_data: "[green]Generating sample data...[/]"
+generation_done: Done! Press any key to return.
+
+# Validation
+enter_id: "Please, enter {0}'s ID: "
+wrong_id: "[red]Wrong ID![/]"
+# These should be lowercase
+habit: habit
+activity: activity
+
+# Settings
+database_type: Database engine
+language: Language
+english: English
+polish: Polish
+spanish: Spanish
+save_settings_confirm: Are you sure you want to save the changes and exit?
