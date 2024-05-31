@@ -6,11 +6,11 @@ internal class SampleData
 {
     static public void Open()
     {
-        if (AnsiConsole.Confirm("Are you sure you want to create sample data? It can be removed later manually."))
+        if (AnsiConsole.Confirm(Localization.GetString("generate_confirm")))
         {
             Database.Operations.GenerateSampleData();
 
-            AnsiConsole.WriteLine("Done! Press any key to return.");
+            AnsiConsole.WriteLine(Localization.GetString("generation_done"));
             Console.ReadKey();
         }
     }

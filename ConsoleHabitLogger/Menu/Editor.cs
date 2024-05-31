@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using System.Linq;
 using ConsoleHabitLogger.Database;
 using Spectre.Console;
 
@@ -30,16 +31,16 @@ public class Editor
                 case ConsoleKey.A:
                 case ConsoleKey.Add:
                     Utils.ConsoleClear();
-                    string habit = AnsiConsole.Ask<string>("How do you want to name your [green]habit[/]?");
-                    string unit = AnsiConsole.Ask<string>("What [green]unit[/] do you want to use for it?").ToLower();
+                    string habit = AnsiConsole.Ask<string>(Localization.GetString("habit_name"));
+                    string unit = AnsiConsole.Ask<string>(Localization.GetString("habit_unit")).ToLower();
 
-                    if ((unit.Contains("time") || unit.Contains("second") || unit.Contains("minute") || unit.Contains("hour") || unit.Contains("day") || unit.Contains("week") || unit.Contains("month") || unit.Contains("year")) && AnsiConsole.Confirm("Do you want to use time selector?"))
+                    if ((unit.Contains(Localization.GetString("time")) || unit.Contains(Localization.GetString("second")) || unit.Contains(Localization.GetString("minute")) || unit.Contains(Localization.GetString("hour")) || unit.Contains(Localization.GetString("day")) || unit.Contains(Localization.GetString("week")) || unit.Contains(Localization.GetString("month")) || unit.Contains(Localization.GetString("year"))) && AnsiConsole.Confirm(Localization.GetString("time_selector")))
                     {
                         unit = "time";
                     }
 
                     Database.Operations.CreateHabit(habit, unit);
-                    AnsiConsole.WriteLine($"Successfully created a habit with name \"{habit}\" and unit \"{unit}\".");
+                    AnsiConsole.WriteLine(Localization.GetString("habit_created"), habit, unit);
                     Console.ReadKey();
                     break;
                 case ConsoleKey.Enter:
@@ -48,8 +49,8 @@ public class Editor
                     break;
                 case ConsoleKey.E:
                     int idToEdit = Validation.SelectId(true);
-                    string editName = AnsiConsole.Ask<string>("How do you want to name your [green]habit[/]?");
-                    string editUnit = AnsiConsole.Ask<string>("What [green]unit[/] do you want to use for it?").ToLower();
+                    string editName = AnsiConsole.Ask<string>(Localization.GetString("habit_name"));
+                    string editUnit = AnsiConsole.Ask<string>(Localization.GetString("habit_unit")).ToLower();
                     
                     Operations.EditHabit(idToEdit, editName, editUnit);
                     break;
@@ -57,7 +58,7 @@ public class Editor
                 case ConsoleKey.Delete:
                     int idToRemove = Validation.SelectId(true);
 
-                    if (AnsiConsole.Confirm($"Are you sure you want to remove habit with id \"{idToRemove}\"?"))
+                    if (AnsiConsole.Confirm(String.Format(Localization.GetString("habit_remove"), idToRemove)))
                     {
                         Database.Operations.RemoveHabit(idToRemove);
                     }
@@ -96,55 +97,55 @@ public class Editor
                 case ConsoleKey.A:
                 case ConsoleKey.Add:
                     Utils.ConsoleClear();
-                    string description = AnsiConsole.Ask<string>("How do you want to describe your [green]activity[/]?");
+                    string description = AnsiConsole.Ask<string>(Localization.GetString("activity_description"));
 
                     if (!useTimeSelector)
                     {
-                        string amountString = AnsiConsole.Ask<string>("What's the [green]amount[/]?").ToLower();
+                        string amountString = AnsiConsole.Ask<string>(Localization.GetString("activity_amount")).ToLower();
                         double amount = 0;
 
                         while (!double.TryParse(amountString, out amount))
                         {
-                            AnsiConsole.MarkupLine("[red]It has to be a number![/]");
-                            amountString = AnsiConsole.Ask<string>("What's the [green]amount[/]?").ToLower();
+                            AnsiConsole.MarkupLine(Localization.GetString("number_required"));
+                            amountString = AnsiConsole.Ask<string>(Localization.GetString("activity_amount")).ToLower();
                         }
 
                         Database.Operations.CreateActivity(habitId, amount.ToString(CultureInfo.CurrentCulture), description);
-                        AnsiConsole.WriteLine($"Successfully created an activity with description \"{description}\" and with amount of \"{amount}\".");
+                        AnsiConsole.WriteLine(Localization.GetString("activity_created"), description, amount);
                     }
                     else
                     {
                         TimeSpan duration = TimeSelector(habitId);
                         Database.Operations.CreateActivity(habitId, duration.ToString(), description);
-                        AnsiConsole.WriteLine($"Successfully created an activity with description \"{description}\" and with timespan of \"{duration}\".");
+                        AnsiConsole.WriteLine(Localization.GetString("activity_created_time"), description, duration);
                     }
 
                     Console.ReadKey();
                     break;
                 case ConsoleKey.E:
-                    int idToEdit = Validation.SelectId(true);
-                    string editDescription = AnsiConsole.Ask<string>("How do you want to describe your [green]activity[/]?");
+                    int idToEdit = Validation.SelectId(false);
+                    string editDescription = AnsiConsole.Ask<string>(Localization.GetString("activity_description"));
                     
                     if (!useTimeSelector)
                     {
-                        string amountString = AnsiConsole.Ask<string>("What's the [green]amount[/]?").ToLower();
+                        string amountString = AnsiConsole.Ask<string>(Localization.GetString("activity_amount")).ToLower();
                         double amount = 0;
 
                         while (!double.TryParse(amountString, out amount))
                         {
-                            AnsiConsole.MarkupLine("[red]It has to be a number![/]");
-                            amountString = AnsiConsole.Ask<string>("What's the [green]amount[/]?").ToLower();
+                            AnsiConsole.MarkupLine(Localization.GetString("number_required"));
+                            amountString = AnsiConsole.Ask<string>(Localization.GetString("activity_amount")).ToLower();
                         }
 
                         Database.Operations.EditActivity(idToEdit, amount.ToString(CultureInfo.CurrentCulture), editDescription);
-                        AnsiConsole.WriteLine($"Successfully edited an activity with description \"{editDescription}\" and with amount of \"{amount}\".");
+                        AnsiConsole.WriteLine(Localization.GetString("activity_edited"), editDescription, amount);
                     }
                     else
                     {
                         TimeSpan editDuration = TimeSelector(idToEdit);
                         Database.Operations.EditActivity(idToEdit, editDuration.ToString(), editDescription);
                         AnsiConsole.WriteLine(
-                            $"Successfully edited an activity with description \"{editDescription}\" and with timespan of \"{editDuration}\".");
+                            Localization.GetString("activity_edited_time"), editDescription, editDuration);
                     }
 
                     break;
@@ -152,7 +153,7 @@ public class Editor
                 case ConsoleKey.Delete:
                     int id = Validation.SelectId(false);
 
-                    if (AnsiConsole.Confirm($"Are you sure you want to remove activity with id \"{id}\"?"))
+                    if (AnsiConsole.Confirm(String.Format(Localization.GetString("activity_remove_confirm"), id)))
                     {
                         Database.Operations.RemoveActivity(id);
                     }
@@ -186,11 +187,11 @@ public class Editor
             Table table = new Table();
             BreakdownChart chart = new BreakdownChart().Width(60);
 
-            table.Title($"Habits, {page}/{numberOfPages}");
-            table.AddColumn(new TableColumn("ID").Centered());
-            table.AddColumn(new TableColumn("Name").Centered());
-            table.AddColumn(new TableColumn("Measure unit").Centered());
-            table.AddColumn(new TableColumn("Number of entries").Centered());
+            table.Title(string.Format(Localization.GetString("habits"), page, numberOfPages));
+            table.AddColumn(new TableColumn(Localization.GetString("id")).Centered());
+            table.AddColumn(new TableColumn(Localization.GetString("name")).Centered());
+            table.AddColumn(new TableColumn(Localization.GetString("unit")).Centered());
+            table.AddColumn(new TableColumn(Localization.GetString("entries")).Centered());
 
             foreach (List<string> row in Database.Operations.ReadHabits(10, page * 10 - 10))
             {
@@ -202,12 +203,12 @@ public class Editor
             AnsiConsole.Write(table);
 
             AnsiConsole.Write(new Rows(
-                new Text("Controls:"),
-                new Text("Left/Right arrow - change page"),
-                new Text("Enter - See records of a habit"),
-                new Text("E - Edit a habit"),
-                new Text("A - Add a new habit"),
-                new Text("R - Remove habit"),
+                new Text(Localization.GetString("controls")),
+                new Text(Localization.GetString("change_page")),
+                new Text(Localization.GetString("see_habit")),
+                new Text(Localization.GetString("add_habit")),
+                new Text(Localization.GetString("remove_habit")),
+                new Text(Localization.GetString("edit_habit")),
                 new Text("")
             ));
 
@@ -224,11 +225,11 @@ public class Editor
             Table table = new Table();
             BreakdownChart chart = new BreakdownChart().Width(60);
 
-            table.Title($"Activities of {Database.Operations.GetHabitName(habitId)}, {page}/{numberOfPages}");
-            table.AddColumn(new TableColumn("ID").Centered());
-            table.AddColumn(new TableColumn("Amount").Centered());
-            table.AddColumn(new TableColumn("Description").Centered());
-            table.AddColumn(new TableColumn("Time created").Centered());
+            table.Title(string.Format(Localization.GetString("activities"), Database.Operations.GetHabitName(habitId), page, numberOfPages));
+            table.AddColumn(new TableColumn(Localization.GetString("id")).Centered());
+            table.AddColumn(new TableColumn(Localization.GetString("amount")).Centered());
+            table.AddColumn(new TableColumn(Localization.GetString("description")).Centered());
+            table.AddColumn(new TableColumn(Localization.GetString("time_created")).Centered());
 
             foreach (List<string> row in Database.Operations.ReadActivities(habitId, 10, page * 10 - 10))
             {
@@ -242,17 +243,17 @@ public class Editor
                     }
                 }
 
-                chart.AddItem(row[0], amount, Utils.GetRandomColor());
+                chart.AddItem(row[2], amount, Utils.GetRandomColor());
             }
 
             AnsiConsole.Write(table);
 
             AnsiConsole.Write(new Rows(
-                new Text("Controls:"),
-                new Text("Left/Right arrow - change page"),
-                new Text("E - Edit an activity"),
-                new Text("A - Add a new activity"),
-                new Text("R - Remove activity"),
+                new Text(Localization.GetString("controls")),
+                new Text(Localization.GetString("change_page")),
+                new Text(Localization.GetString("edit_activity")),
+                new Text(Localization.GetString("add_activity")),
+                new Text(Localization.GetString("remove_activity")),
                 new Text("")
             ));
 
@@ -262,35 +263,35 @@ public class Editor
 
     private static TimeSpan TimeSelector(int habitId)
     {
-        AnsiConsole.MarkupLine($"Date/time format you should use: [green]{DateTime.Now}[/]");
+        AnsiConsole.MarkupLine(Localization.GetString("date_format"), DateTime.Now);
 
         TimeSpan duration;
 
         do
         {
             DateTime startDate;
-            string startDateString = AnsiConsole.Ask<string>("What's the [green]start time/date[/]?").ToLower();
+            string startDateString = AnsiConsole.Ask<string>(Localization.GetString("start_time")).ToLower();
 
             while (!DateTime.TryParse(startDateString, out startDate))
             {
-                AnsiConsole.MarkupLine("[red]It has to be a valid date![/]");
-                startDateString = AnsiConsole.Ask<string>("What's the [green]start time/date[/]?").ToLower();
+                AnsiConsole.MarkupLine(Localization.GetString("invalid_date"));
+                startDateString = AnsiConsole.Ask<string>(Localization.GetString("start_time")).ToLower();
             }
 
             DateTime endDate;
-            string endDateString = AnsiConsole.Ask<string>("What's the [green]end time/date[/]?").ToLower();
+            string endDateString = AnsiConsole.Ask<string>(Localization.GetString("end_time")).ToLower();
 
             while (!DateTime.TryParse(endDateString, out endDate))
             {
-                AnsiConsole.MarkupLine("[red]It has to be a valid date![/]");
-                endDateString = AnsiConsole.Ask<string>("What's the [green]end time/date[/]?").ToLower();
+                AnsiConsole.MarkupLine(Localization.GetString("invalid_date"));
+                endDateString = AnsiConsole.Ask<string>(Localization.GetString("end_time")).ToLower();
             }
 
             duration = endDate.Subtract(startDate);
 
             if (duration <= TimeSpan.Zero)
             {
-                AnsiConsole.MarkupLine("[red]Time spent on an activity can't be equal or lower than 0![/]");
+                AnsiConsole.MarkupLine(Localization.GetString("time_less_than_zero"));
             }
         } while (duration <= TimeSpan.Zero);
 

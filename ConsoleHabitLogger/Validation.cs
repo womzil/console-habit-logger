@@ -6,15 +6,15 @@ public class Validation
 {
     public static int SelectId(bool habit)
     {
-        string habitOrActivity = habit ? "habit" : "activity";
+        string habitOrActivity = habit ? Localization.GetString("habit") : Localization.GetString("activity");
 
         int id = 0;
-        string input = AnsiConsole.Ask<string>($"Please, enter {habitOrActivity}'s ID: ");
+        string input = AnsiConsole.Ask<string>(string.Format(Localization.GetString("enter_id"), habitOrActivity));
 
         while (!int.TryParse(input, out id) || habit ? !Database.Operations.HabitExists(id) : !Database.Operations.ActivityExists(id))
         {
-            AnsiConsole.MarkupLine("[red]Wrong ID![/]");
-            input = AnsiConsole.Ask<string>($"Please, enter {habitOrActivity}'s ID: ");
+            AnsiConsole.MarkupLine(Localization.GetString("wrong_id"));
+            input = AnsiConsole.Ask<string>(string.Format(Localization.GetString("enter_id"), habitOrActivity));
         }
 
         return id;

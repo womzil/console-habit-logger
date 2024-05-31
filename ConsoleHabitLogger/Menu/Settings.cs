@@ -10,16 +10,16 @@ public class Settings
         string databaseEngine = Program.Config["database:type"]!;
 
         string[] languages = ["en", "es", "pl"];
-        string[] databaseEngines = ["SQLite", "Dapper ORM"];
+        string[] databaseEngines = ["SQLite"];
 
         int languageIndex = 0;
         int databaseEngineIndex = 0;
 
         Dictionary<string, string> languageCodeToString = new Dictionary<string, string>
         {
-            { "en", "English" },
-            { "es", "Spanish" },
-            { "pl", "Polish" }
+            { "en", Localization.GetString("english") },
+            { "es", Localization.GetString("spanish") },
+            { "pl", Localization.GetString("polish") }
         };
 
         string[] highlightedText = ["[green]", "[/]"];
@@ -32,9 +32,9 @@ public class Settings
         while (true)
         {
             Utils.ConsoleClear();
-            AnsiConsole.MarkupLine($"Language: {toHighlight[0, 0]}{languageCodeToString[language!]}{toHighlight[0, 1]}");
-            AnsiConsole.MarkupLine($"Database engine: {toHighlight[1, 0]}{databaseEngine}{toHighlight[1, 1]}");
-            
+            AnsiConsole.MarkupLine($"{Localization.GetString("language")}: {toHighlight[0, 0]}{languageCodeToString[language!]}{toHighlight[0, 1]}");
+            AnsiConsole.MarkupLine($"{Localization.GetString("database_type")}: {toHighlight[1, 0]}{databaseEngine}{toHighlight[1, 1]}");
+
             ConsoleKey key = AnsiConsole.Console.Input.ReadKey(true)!.Value.Key;
 
             switch (key)
@@ -82,7 +82,7 @@ public class Settings
                     }
                     break;
                 case ConsoleKey.Escape:
-                    if (AnsiConsole.Confirm("Are you sure you want to save the changes and exit?"))
+                    if (AnsiConsole.Confirm(Localization.GetString("save_settings_confirm")))
                     {
                         AnsiConsole.WriteLine("Leaving...");
                         Program.Config["locale:language"] = language;

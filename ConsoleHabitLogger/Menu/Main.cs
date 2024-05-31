@@ -15,42 +15,36 @@ internal static class Main
                 new Text(Localization.GetString("welcome_message")),
                 new Text(Localization.GetString("warning_vscode")),
                 new Text(""),
-                new Text("You can use this program to log any habit/activity of choice."),
+                new Text(Localization.GetString("program_features")),
                 new Text("")
             ));
 
+            string editor = Localization.GetString("editor");
+            string sampleData = Localization.GetString("sample_data");
+            string settings = Localization.GetString("settings");
+            string exit = Localization.GetString("exit");
+
             string option = AnsiConsole.Prompt(
                 new SelectionPrompt<string>()
-                    .Title("Please, choose what you want to do from the list below.")
+                    .Title(Localization.GetString("selection"))
                     .PageSize(10)
-                    .MoreChoicesText("[grey](Move up and down to reveal more options)[/]")
+                    .MoreChoicesText($"[grey]({Localization.GetString("more_options")})[/]")
                     .AddChoices(
-                        "Editor", "Create sample data", "Settings", "Exit"
+                        editor, sampleData, settings, exit
                     ));
 
-            switch (option)
-            {
-                case "Editor":
-                    Editor.OpenHabitEditor();
-                    break;
-
-                case "Create sample data":
-                    SampleData.Open();
-                    break;
-
-                case "Settings":
-                    Settings.Open();
-                    break;
-
-                case "Exit":
-                    if (AnsiConsole.Confirm("Are you sure you want to leave?"))
-                    {
-                        AnsiConsole.WriteLine("Leaving...");
-                        return;
-                    }
-
-                    break;
-            }
+            if (option == editor)
+                Editor.OpenHabitEditor();
+            else if (option == sampleData)
+                SampleData.Open();
+            else if (option == settings)
+                Settings.Open();
+            else if (option == exit)
+                if (AnsiConsole.Confirm(Localization.GetString("exit_confirmation")))
+                {
+                    AnsiConsole.WriteLine(Localization.GetString("leaving"));
+                    return;
+                }
         }
     }
 }
