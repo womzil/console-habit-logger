@@ -6,8 +6,8 @@ public class Settings
 {
     public static void Open()
     {
-        string language = Program.Config["locale:language"];
-        string databaseEngine = Program.Config["database:type"];
+        string language = Program.Config["locale:language"]!;
+        string databaseEngine = Program.Config["database:type"]!;
 
         string[] languages = ["en", "es", "pl"];
         string[] databaseEngines = ["SQLite", "Dapper ORM"];
@@ -15,10 +15,12 @@ public class Settings
         int languageIndex = 0;
         int databaseEngineIndex = 0;
 
-        Dictionary<string, string> languageCodeToString = new Dictionary<string, string>();
-        languageCodeToString.Add("en", "English");
-        languageCodeToString.Add("es", "Spanish");
-        languageCodeToString.Add("pl", "Polish");
+        Dictionary<string, string> languageCodeToString = new Dictionary<string, string>
+        {
+            { "en", "English" },
+            { "es", "Spanish" },
+            { "pl", "Polish" }
+        };
 
         string[] highlightedText = ["[green]", "[/]"];
         int selector = 0;
@@ -30,10 +32,10 @@ public class Settings
         while (true)
         {
             Utils.ConsoleClear();
-            AnsiConsole.MarkupLine($"Language: {toHighlight[0, 0]}{languageCodeToString[language]}{toHighlight[0, 1]}");
+            AnsiConsole.MarkupLine($"Language: {toHighlight[0, 0]}{languageCodeToString[language!]}{toHighlight[0, 1]}");
             AnsiConsole.MarkupLine($"Database engine: {toHighlight[1, 0]}{databaseEngine}{toHighlight[1, 1]}");
             
-            ConsoleKey key = AnsiConsole.Console.Input.ReadKey(true).Value.Key;
+            ConsoleKey key = AnsiConsole.Console.Input.ReadKey(true)!.Value.Key;
 
             switch (key)
             {

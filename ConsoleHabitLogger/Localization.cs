@@ -11,10 +11,9 @@ static class Localization
     {
         CultureInfo ci = CultureInfo.InstalledUICulture;
         string languageCode = ci.TwoLetterISOLanguageName;
-        string filePath = $"./Locale/{languageCode}.yaml";
 
         if (Program.Config["locale:language"] != null && Program.Config["locale:language"] != "default")
-            languageCode = Program.Config["locale:language"];
+            languageCode = Program.Config["locale:language"]!;
 
         // Check if a culture with that language code exists
         bool correctLanguageCode = CultureInfo
@@ -22,9 +21,11 @@ static class Localization
             .Any(culture => culture.TwoLetterISOLanguageName == languageCode);
 
         if (correctLanguageCode)
-            Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture(languageCode);
+            Thread.CurrentThread.CurrentCulture = CultureInfo.CreateSpecificCulture(languageCode!);
         else
             languageCode = ci.TwoLetterISOLanguageName;
+
+        string filePath = $"./Locale/{languageCode}.yaml";
 
         if (File.Exists(filePath))
         {
@@ -44,10 +45,7 @@ static class Localization
 
     public static string GetString(string key)
     {
-        if (localizedStrings.ContainsKey(key))
-            return localizedStrings[key];
-
         // Return the key itself if the translation is not found
-        return key;
+        return localizedStrings.GetValueOrDefault(key, key);
     }
 }

@@ -36,27 +36,36 @@ public class Program
         XmlElement rootElement = xmlDoc.CreateElement("configuration");
         xmlDoc.AppendChild(rootElement);
 
-        foreach (KeyValuePair<string, string> VARIABLE in Config.AsEnumerable())
-        {
-            Console.WriteLine("Key = {0}, Value = {1}", VARIABLE.Key, VARIABLE.Value);
-        }
-
-        foreach (KeyValuePair<string, string> data in Config.AsEnumerable())
+        foreach (KeyValuePair<string, string?> data in Config.AsEnumerable())
         {
             if (!string.IsNullOrEmpty(data.Value))
             {
                 int colonCount = data.Key.ToCharArray().Count(c => c == ':');
                 if (colonCount > 0)
                 {
+                    for (int i = 0; i <= colonCount; i++)
+                    {
+                        string[] subElement = data.Key.Split(':');
+                        XmlElement element = xmlDoc.CreateElement(subElement[i]);
+
+                        if (i == colonCount)
+                            element.InnerText = data.Value;
+
+                        if (rootElement.HasChildNodes && i > 0 && rootElement.LastChild?.Name == subElement[i - 1])
+                            rootElement.LastChild?.AppendChild(element);
+                        else if (rootElement.LastChild?.Name != subElement[0])
+                            rootElement.AppendChild(element);
+                    }
                 }
-                XmlElement element = xmlDoc.CreateElement(data.Key);
-                element.InnerText = data.Value;
-                rootElement.AppendChild(element);
+                else
+                {
+                    XmlElement element = xmlDoc.CreateElement(data.Key);
+                    element.InnerText = data.Value;
+                    rootElement.AppendChild(element);
+                }
             }
         }
 
         xmlDoc.Save(ConfigLocation);
-
-        Console.ReadKey();
     }
 }
